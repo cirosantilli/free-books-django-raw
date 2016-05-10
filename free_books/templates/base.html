@@ -2,15 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
-    <title>{{ title }}</title>
+    <title>{{ title }} - Free Books</title>
 </head>
 <body>
     <div>
     {# TODO don't show this on the login page itself. #}
     {% if user.is_authenticated %}
-        Logged in as: <strong>{{ user.username }}</strong> | <a href="{% url 'logout' %}">Logout</a>
+        {% trans "Logged in as:" %} <strong>{{ user.username }}</strong> |
+        <a href="{% url 'logout' %}">{% trans "Logout" %}</a>
     {% else %}
-        Logged out | <a href="{% url 'login' %}?next={{ request.path }}">Login</a>
+        <a href="{% url 'login' %}?next={{ request.path }}">{% trans "Login" %}</a>
     {% endif %}
     </div>
     <h1>{{ title }}</h1>

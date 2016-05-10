@@ -7,10 +7,10 @@
 <pre>
 {{ article.body }}
 </pre>
-<div><a href="{% url 'article_edit' article.id %}">Edit article</a></div>
+<div><a href="{% url 'article_edit' article.id %}">{% trans 'Edit article' %}</a></div>
 <form action="{% url 'article_delete' article.id %}" method="post">
     {% csrf_token %}
-    <input type="submit" value="Delete article" />
+    <input type="submit" value="{% trans "Delete article" %}" />
 </form>
 {% include 'articles/new_link.html' %}
 {% endblock %}

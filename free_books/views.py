@@ -10,13 +10,13 @@ from .models import Article, ArticleForm
 from .util import Http401
 
 def profile(request):
-    return render(request, 'registration/profile.html', {'title': 'Profile'})
+    return render(request, 'registration/profile.html', {'title': _('Profile')})
 
 def article_index(request):
     articles = Article.objects.order_by('-pub_date')[:100]
     return render(request, 'articles/index.html', {
         'articles': articles,
-        'title': 'Articles',
+        'title': _('Articles'),
     })
 def article_detail(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
@@ -41,8 +41,8 @@ def article_new(request):
     return render(request, 'articles/new.html', {
         'form': form,
         'form_action': reverse('article_new'),
-        'submit_value': 'Create',
-        'title': 'New article',
+        'submit_value': _('Create'),
+        'title': _('New article'),
     })
 
 def article_edit(request, article_id):
@@ -62,8 +62,8 @@ def article_edit(request, article_id):
     return render(request, 'articles/new.html', {
         'form': form,
         'form_action': reverse('article_edit', args=[article.id]),
-        'submit_value': 'Save changes',
-        'title': 'Editing article',
+        'submit_value': _('Save changes'),
+        'title': _('Editing article'),
     })
 
 def article_delete(request, article_id):
