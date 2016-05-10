@@ -1,6 +1,7 @@
 import datetime
 
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -12,6 +13,7 @@ from .util import Http401, website_name
 def home(request):
     return render(request, 'home.html', {'title': _('Home')})
 
+@login_required
 def profile(request):
     return render(request, 'registration/profile.html', {'title': _('Profile')})
 
@@ -28,9 +30,8 @@ def article_detail(request, article_id):
         'title': article.title,
     })
 
+@login_required
 def article_new(request):
-    if not request.user.is_authenticated():
-        return Http401()
     if request.method == 'POST':
         form = ArticleForm(request.POST)
         if form.is_valid():
@@ -48,9 +49,11 @@ def article_new(request):
         'title': _('New article'),
     })
 
+# TODO store an undeletable permanent version history of articles
+@login_required
 def article_edit(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
-    if not request.user.is_authenticated() or request.user != article.creator:
+    if request.user != article.creator:
         return Http401()
     if request.method == 'POST':
         form = ArticleForm(request.POST, instance=article)
@@ -78,3 +81,40 @@ def article_delete(request, article_id):
         return redirect('article_index')
     else:
         return HttpResponseNotAllowed()
+
+def profile_index(request):
+    profiles = Profile.objects.order_by('-pub_date')[:100]
+    return render(request, 'profiles/index.html', {
+        'profiles': profiles,
+        'title': _('Profiles'),
+    })
+
+def profile_detail(request, profile_id):
+    profile = get_object_or_404(Profile, pk=profile_id)
+    return render(request, 'profiles/detail.html', {
+        'profile': profile,
+        'title': profile.title,
+    })
+
+@login_required
+def profile_edit(request, profile_id):
+    profile = get_object_or_404(Profile, pk=profile_id)
+    if request.profile != profile.creator:
+        return Http401()
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            profile = form.save(commit=False)
+            profile.last_edited = timezone.now()
+            profile.save()
+            return redirect(profile)
+        # TODO else? Or does it throw?
+    else:
+        form = ProfileForm(instance=profile)
+    return render(request, 'profiles/new.html', {
+        'form': form,
+        'form_action': reverse('profile_edit', args=[profile.id]),
+        'submit_value': _('Save changes'),
+        'title': _('Editing profile'),
+    })
+

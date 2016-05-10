@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if articles %}
+    <table>
+        <tr>
+            <th>{% trans "Title" %}</th>
+            <th>{% trans "Creator" %}</th>
+            <th>{% trans "Publish date" %}</th>
+            <th>{% trans "Last edited" %}</th>
+        </tr>
+    {% for article in articles %}
+        <tr>
+            <td><a href="{% url 'article_detail' article.id %}">{{ article.title }}</a></td>
+            <td>{{ article.creator }}</td>
+            <td>{{ article.pub_date }}</td>
+            <td>{{ article.last_edited }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% else %}
+<div>{% trans "There are no articles that you can see" %}</div>
+{% endif %}
+{% include 'articles/new_link.html' %}
+{% endblock %}
