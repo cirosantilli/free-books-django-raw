@@ -1,0 +1,13 @@
+/* TODO move to SASS when it starts getting messy. */
+table {
+    border-collapse: collapse;
+    border: 1px solid black;
+    text-align: left;
+}
+td, th {
+    border: 1px solid black;
+    padding: 2px;
+}
+th {
+    font-weight: bold;
+}
