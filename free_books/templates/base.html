@@ -8,11 +8,13 @@
     <div>
     {# TODO don't show this on the login page itself. #}
     {% if user.is_authenticated %}
-        Logged in as: {{ user.username }}. <a href="{% url 'logout' %}">Logout</a>.
+        Logged in as: <strong>{{ user.username }}</strong> | <a href="{% url 'logout' %}">Logout</a>
     {% else %}
-        Logged out. <a href="{% url 'login' %}">Login</a>.
+        Logged out | <a href="{% url 'login' %}?next={{ request.path }}">Login</a>
     {% endif %}
     </div>
+    <h1>{{ title }}</h1>
+    {% if error_message %}<div>{{ error_message }}</div>{% endif %}
     {% block content %}{% endblock %}
 </body>
 </html>

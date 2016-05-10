@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>Creator: {{ user.username }}</div>
+<div>Publish date: {{ article.pub_date }}</div>
+<div>Last edited: {{ article.last_edited }}</div>
+<pre>
+{{ article.body }}
+</pre>
+<div><a href="{% url 'article_edit' article.id %}">Edit article</a></div>
+<form action="{% url 'article_delete' article.id %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Delete article" />
+</form>
+{% include 'articles/new_link.html' %}
+{% endblock %}

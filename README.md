@@ -1,3 +1,3 @@
-# Raw Django prototype
+# Free Books Raw Django
 
-Using nothing a base, just Django.
+<https://githiub.com/cirosantilli/write-free-science-books-to-get-famous-website> using nothing as base, just Django.

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if articles %}
+    <ul>
+    {% for article in articles %}
+        <li><a href="{% url 'article_detail' article.id %}">{{ article.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <div>There are no articles that you can see.</div>
+{% endif %}
+{% include 'articles/new_link.html' %}
+{% endblock %}
