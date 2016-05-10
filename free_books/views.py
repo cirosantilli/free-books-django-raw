@@ -7,7 +7,10 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 
 from .models import Article, ArticleForm
-from .util import Http401
+from .util import Http401, website_name
+
+def home(request):
+    return render(request, 'home.html', {'title': _('Home')})
 
 def profile(request):
     return render(request, 'registration/profile.html', {'title': _('Profile')})
