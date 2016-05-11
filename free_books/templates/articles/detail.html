@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div>Creator: {{ user.username }}</div>
-<div>Publish date: {{ article.pub_date }}</div>
-<div>Last edited: {{ article.last_edited }}</div>
+<div>{% trans "Creator" %}: {% user_link article.creator %}</div>
+<div>{% trans "Publish date" %}: {{ article.pub_date }}</div>
+<div>{% trans "Last edited" %}: {{ article.last_edited }}</div>
+<div>{% trans "Body" %}:</div>
 <pre>
 {{ article.body }}
 </pre>

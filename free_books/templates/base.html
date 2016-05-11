@@ -13,7 +13,7 @@
             <div>
             {# TODO don't show this on the login page itself. #}
             {% if user.is_authenticated %}
-                {% trans "Logged in as:" %} <strong>{{ user.username }}</strong> |
+                {% trans "Logged in as:" %} <strong>{% user_link %}</strong> |
                 <a href="{% url 'logout' %}">{% trans "Logout" %}</a>
             {% else %}
                 <a href="{% url 'login' %}?next={{ request.path }}">{% trans "Login" %}</a>
@@ -21,7 +21,8 @@
             </div>
             <div>
               <span><a href="{% url 'home' %}">{% trans "Home" %}</a><span> |
-              <span><a href="{% url 'article_index' %}">{% trans "Articles" %}</a><span>
+              <span><a href="{% url 'article_index' %}">{% trans "Articles" %}</a><span> |
+              <span><a href="{% url 'user_index' %}">{% trans "Users" %}</a><span>
             </div>
         </nav>
     </header>

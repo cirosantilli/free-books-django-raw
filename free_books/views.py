@@ -1,7 +1,8 @@
 import datetime
 
-from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -82,39 +83,39 @@ def article_delete(request, article_id):
     else:
         return HttpResponseNotAllowed()
 
-def profile_index(request):
-    profiles = Profile.objects.order_by('-pub_date')[:100]
-    return render(request, 'profiles/index.html', {
-        'profiles': profiles,
-        'title': _('Profiles'),
+def user_index(request):
+    users = User.objects.order_by('-date_joined')[:100]
+    print(users[0].profile.last_edited);
+    return render(request, 'users/index.html', {
+        'users': users,
+        'title': _('Users'),
     })
 
-def profile_detail(request, profile_id):
-    profile = get_object_or_404(Profile, pk=profile_id)
-    return render(request, 'profiles/detail.html', {
-        'profile': profile,
-        'title': profile.title,
+def user_detail(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    return render(request, 'users/detail.html', {
+        'user': user,
+        'title': user.username,
     })
 
 @login_required
-def profile_edit(request, profile_id):
-    profile = get_object_or_404(Profile, pk=profile_id)
-    if request.profile != profile.creator:
+def user_edit(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    if request.user != user.creator:
         return Http401()
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=profile)
+        form = UserForm(request.POST, instance=user)
         if form.is_valid():
-            profile = form.save(commit=False)
-            profile.last_edited = timezone.now()
-            profile.save()
-            return redirect(profile)
+            user = form.save(commit=False)
+            user.last_edited = timezone.now()
+            user.save()
+            return redirect(user)
         # TODO else? Or does it throw?
     else:
-        form = ProfileForm(instance=profile)
-    return render(request, 'profiles/new.html', {
+        form = UserForm(instance=user)
+    return render(request, 'users/new.html', {
         'form': form,
-        'form_action': reverse('profile_edit', args=[profile.id]),
+        'form_action': reverse('user_edit', args=[user.id]),
         'submit_value': _('Save changes'),
-        'title': _('Editing profile'),
+        'title': _('Editing user'),
     })
-

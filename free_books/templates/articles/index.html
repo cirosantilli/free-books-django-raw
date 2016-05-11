@@ -12,7 +12,7 @@
     {% for article in articles %}
         <tr>
             <td><a href="{% url 'article_detail' article.id %}">{{ article.title }}</a></td>
-            <td>{{ article.creator }}</td>
+            <td>{% user_link article.creator %}</td>
             <td>{{ article.pub_date }}</td>
             <td>{{ article.last_edited }}</td>
         </tr>

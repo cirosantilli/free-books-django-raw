@@ -5,3 +5,11 @@
 How to run it: <https://github.com/cirosantilli/django-cheat2/blob/1c1dfcee6c27d483def5b6a1e873c4fc63886fba/getting-started.md>
 
 Tested on Ubuntu 16.04, Python 3.5.
+
+This is basically a simple multi-user blog.
+
+We could consider using existing Django libraries as a basis, e.g.: <https://www.djangopackages.com/grids/g/blogs/>
+
+But yeah, if you can't make a blog app, you can't make any app.
+
+And those blog apps have many blog-specific features which we don't need, which adds time to find the ones that matter.

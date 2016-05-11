@@ -25,12 +25,12 @@ urlpatterns.extend([
 ])
 
 prefix = r'u'
-id = r'(?P<profile_id>[0-9]+)'
+id = r'(?P<user_id>[0-9]+)'
 urlpatterns.extend([
-    url(r'^' + prefix + '/$', views.profile_index, name='profile_index'),
-    # url(r'^' + prefix + '/new$', views.profile_new, name='profile_new'),
-    url(r'^' + prefix + '/' + id + '/$', profile_detail, name='profile_detail'),
-    url(r'^' + prefix + '/' + id + '/edit$', profile_edit, name='profile_edit'),
+    url(r'^' + prefix + '/$', views.user_index, name='user_index'),
+    # url(r'^' + prefix + '/new$', views.user_new, name='user_new'),
+    url(r'^' + prefix + '/' + id + '/$', views.user_detail, name='user_detail'),
+    url(r'^' + prefix + '/' + id + '/edit$', views.user_edit, name='user_edit'),
     # This must be impossible to prevent content loss.
-    # url(r'^' + prefix + '/' + id + '/delete$', views.profile_delete, name='profile_delete'),
+    # url(r'^' + prefix + '/' + id + '/delete$', views.user_delete, name='user_delete'),
 ])

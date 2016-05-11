@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table>
+    <tr>
+        <th>{% trans "Username" %}</th>
+        <th>{% trans "Real name" %}</th>
+        <th>{% trans "Reputation" %}</th>
+        <th>{% trans "Date joined" %}</th>
+        <th>{% trans "Profile last edited" %}</th>
+    </tr>
+{% for user in users %}
+    <tr>
+        <td>{% user_link user %}</td>
+        <td>{{ user.profile.real_name }}</td>
+        <td>{{ user.profile.reputation }}</td>
+        <td>{{ user.date_joined }}</td>
+        <td>{{ user.profile.last_edited }}</td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}
