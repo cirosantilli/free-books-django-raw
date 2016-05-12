@@ -9,8 +9,7 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.home, name='home'),
-    url(r'^accounts/', include('django.contrib.auth.urls')),
-    url(r'^accounts/profile/$', views.profile),
+    url(r'^', include('django.contrib.auth.urls')),
     url(r'^admin/', admin.site.urls),
 ]
 
@@ -31,6 +30,7 @@ urlpatterns.extend([
     # url(r'^' + prefix + '/new$', views.user_new, name='user_new'),
     url(r'^' + prefix + '/' + id + '/$', views.user_detail, name='user_detail'),
     url(r'^' + prefix + '/' + id + '/edit$', views.user_edit, name='user_edit'),
+    url(r'^' + prefix + '/' + id + '/settings$', views.user_settings, name='user_settings'),
     # This must be impossible to prevent content loss.
     # url(r'^' + prefix + '/' + id + '/delete$', views.user_delete, name='user_delete'),
 ])

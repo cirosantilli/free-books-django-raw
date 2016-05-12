@@ -37,6 +37,16 @@ class Profile(models.Model):
     def real_name(self):
         return self.user.first_name + ' ' + self.user.last_name
 
+class UserForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name']
+
+class ProfileForm(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['about']
+
 def create_profile(sender, instance, created, **kwargs):
     if created:
        Profile.objects.create(user=instance)

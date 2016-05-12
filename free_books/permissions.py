@@ -5,3 +5,5 @@ def has_perm(user, perm, obj=None):
         return user.is_authenticated() and obj.creator == user
     elif perm == 'article_delete':
         return user.is_authenticated() and obj.creator == user
+    elif perm == 'user_edit':
+        return user.is_authenticated() and obj == user

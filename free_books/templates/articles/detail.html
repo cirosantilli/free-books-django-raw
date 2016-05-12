@@ -1,22 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div>{% trans "Creator" %}: {% user_link article.creator %}</div>
-<div>{% trans "Publish date" %}: {{ article.pub_date }}</div>
-<div>{% trans "Last edited" %}: {{ article.last_edited }}</div>
-<div>{% trans "Body" %}:</div>
-<pre>
-{{ article.body }}
-</pre>
-{% if show_edit %}
+{% if show_new or show_edit or show_delete %}
+<div class="actions" >
+    {% if show_edit %}
     <div><a href="{% url 'article_edit' article.id %}">{% trans 'Edit article' %}</a></div>
+    {% endif %}
+    {% if show_delete %}
+    <form action="{% url 'article_delete' article.id %}" method="post"
+            onsubmit="return confirm('{% trans "Are you sure?" %}');">
+        {% csrf_token %}
+        <input type="submit" value="{% trans "Delete article" %}" />
+    </form>
+    {% endif %}
+    {% include 'articles/new_link.html' %}
+</div>
 {% endif %}
-{% if show_delete %}
-<form action="{% url 'article_delete' article.id %}" method="post"
-        onsubmit="return confirm('{% trans "Are you sure?" %}');">
-    {% csrf_token %}
-    <input type="submit" value="{% trans "Delete article" %}" />
-</form>
-{% endif %}
-{% include 'articles/new_link.html' %}
+<div class="main">
+    <div>{% trans "Creator" %}: {% user_link article.creator %}</div>
+    <div>{% trans "Publish date" %}: {{ article.pub_date }}</div>
+    <div>{% trans "Last edited" %}: {{ article.last_edited }}</div>
+    <div>{% trans "Body" %}:</div>
+    <pre>
+    {{ article.body }}
+    </pre>
+<div>
 {% endblock %}

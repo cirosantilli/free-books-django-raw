@@ -11,3 +11,30 @@ td, th {
 th {
     font-weight: bold;
 }
+h1 {
+    border-bottom: 1px solid black;
+    margin-bottom: 5px;
+}
+a:not(:hover) {
+  text-decoration: none;
+}
+nav .login {
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+    margin-bottom: 5px;
+}
+nav .sections {
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+    margin-bottom: 5px;
+}
+main .actions {
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+    margin-bottom: 5px;
+}
+main .main {
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+    margin-bottom: 5px;
+}

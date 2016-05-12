@@ -8,16 +8,12 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
-from .models import Article, ArticleForm
+from .models import Article, ArticleForm, UserForm
 from .permissions import has_perm
 from .util import Http401, website_name
 
 def home(request):
-    return render(request, 'home.html', {'title': _('Home')})
-
-@login_required
-def profile(request):
-    return render(request, 'registration/profile.html', {'title': _('Profile')})
+    return render(request, 'home.html', {'title': website_name})
 
 def article_index(request):
     articles = Article.objects.order_by('-pub_date')[:100]
@@ -101,13 +97,14 @@ def user_detail(request, user_id):
     user = get_object_or_404(User, pk=user_id)
     return render(request, 'users/detail.html', {
         'anuser': user,
-        'title': user.username,
+        'show_edit': has_perm(request.user, 'user_edit', user),
+        'title': _('User') + ' ' + user.username,
     })
 
 @login_required
 def user_edit(request, user_id):
     user = get_object_or_404(User, pk=user_id)
-    if request.user != user.creator:
+    if not has_perm(request.user, 'user_edit', user):
         return Http401()
     if request.method == 'POST':
         form = UserForm(request.POST, instance=user)
@@ -123,5 +120,10 @@ def user_edit(request, user_id):
         'form': form,
         'form_action': reverse('user_edit', args=[user.id]),
         'submit_value': _('Save changes'),
-        'title': _('Editing user'),
+        'title': _('User') + ' ' + user.username,
     })
+
+@login_required
+def user_settings(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    return render(request, 'users/settings.html', {'title': _('Account settings')})
