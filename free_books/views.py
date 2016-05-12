@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 
 from .models import Article, ArticleForm
+from .permissions import has_perm
 from .util import Http401, website_name
 
 def home(request):
@@ -22,12 +23,17 @@ def article_index(request):
     articles = Article.objects.order_by('-pub_date')[:100]
     return render(request, 'articles/index.html', {
         'articles': articles,
+        'show_new': has_perm(request.user, 'article_new'),
         'title': _('Articles'),
     })
+
 def article_detail(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
     return render(request, 'articles/detail.html', {
         'article': article,
+        'show_delete': has_perm(request.user, 'article_delete', article),
+        'show_edit': has_perm(request.user, 'article_edit', article),
+        'show_new': has_perm(request.user, 'article_new'),
         'title': article.title,
     })
 
@@ -54,7 +60,7 @@ def article_new(request):
 @login_required
 def article_edit(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
-    if request.user != article.creator:
+    if not has_perm(request.user, 'article_edit', article):
         return Http401()
     if request.method == 'POST':
         form = ArticleForm(request.POST, instance=article)
@@ -75,7 +81,7 @@ def article_edit(request, article_id):
 
 def article_delete(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
-    if not request.user.is_authenticated() or request.user != article.creator:
+    if not has_perm(request.user, 'article_edit', article):
         return Http401()
     if request.method == 'POST':
         article.delete()

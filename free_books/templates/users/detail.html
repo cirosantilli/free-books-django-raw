@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div>{% trans "Date joined" %}: {{ user.pub_date }}</div>
+<div>{% trans "Date joined" %}: {{ user.date_joined }}</div>
 <div>{% trans "Reputation" %}: {{ user.profile.reputation }}</div>
-<div>{% trans "Profile last edited" %}: {{ user.last_edited }}</div>
+<div>{% trans "Profile last edited" %}: {{ user.profile.last_edited }}</div>
 <div>{% trans "About" %}:</div>
 <pre>
 {{ user.profile.about }}
