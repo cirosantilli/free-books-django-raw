@@ -1,7 +1,3 @@
-# TODO: use a owner slug / article slug addressing scheme like github
-# Fix slugs to [a-z0-9-]. This way it will be feasible to one day git clone an article
-# locally and have nice filenames.
-
 from django.conf.urls import url, include
 from django.contrib import admin
 

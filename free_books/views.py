@@ -6,11 +6,12 @@ from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
 
 from .models import Article, ArticleForm, UserForm, ProfileForm
 from .permissions import has_perm
-from .util import Http401, website_name
+from .util import Http401, render_markup_safe, website_name
 
 def home(request):
     return render(request, 'home.html', {'title': website_name})
@@ -27,6 +28,7 @@ def article_detail(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
     return render(request, 'articles/detail.html', {
         'article': article,
+        'body': render_markup_safe(article.body),
         'show_delete': has_perm(request.user, 'article_delete', article),
         'show_edit': has_perm(request.user, 'article_edit', article),
         'show_new': has_perm(request.user, 'article_new'),
@@ -97,6 +99,7 @@ def user_detail(request, user_id):
     user = get_object_or_404(User, pk=user_id)
     return render(request, 'users/detail.html', {
         'anuser': user,
+        'about': render_markup_safe(user.profile.about),
         'show_edit': has_perm(request.user, 'user_edit', user),
         'title': _('User') + ' ' + user.username,
     })

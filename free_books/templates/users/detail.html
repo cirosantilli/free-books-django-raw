@@ -8,12 +8,15 @@
 </div>
 {% endif %}
 <div class="main">
-    <div>{% trans "Reputation" %}: {{ anuser.profile.reputation }}</div>
-    <div>{% trans "Real name" %}: {{ user.profile.real_name }}</div>
-    <div>{% trans "Date joined" %}: {{ anuser.date_joined }}</div>
-    <div>{% trans "Profile last edited" %}: {{ anuser.profile.last_edited }}</div>
-    <div>{% trans "About" %}:</div>
-    <pre>{{ user.profile.about }}
-    </pre>
+    <div class="metadata">
+        <div>{% trans "Reputation" %}: {{ anuser.profile.reputation }}</div>
+        <div>{% trans "Real name" %}: {{ user.profile.real_name }}</div>
+        <div>{% trans "Date joined" %}: {{ anuser.date_joined }}</div>
+        <div>{% trans "Profile last edited" %}: {{ anuser.profile.last_edited }}</div>
+        <div>{% trans "About" %}:</div>
+    </div>
+    <div class="body">
+    {{ about }}
+    </div>
 </div>
 {% endblock %}

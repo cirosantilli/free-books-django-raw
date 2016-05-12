@@ -33,7 +33,12 @@ main .actions {
     padding-bottom: 2px;
     margin-bottom: 5px;
 }
-main .main {
+main .metadata {
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+    margin-bottom: 5px;
+}
+main .body {
     border-bottom: 1px solid black;
     padding-bottom: 2px;
     margin-bottom: 5px;
