@@ -100,7 +100,7 @@ def user_index(request):
 def user_detail(request, user_id):
     user = get_object_or_404(User, pk=user_id)
     return render(request, 'users/detail.html', {
-        'user': user,
+        'anuser': user,
         'title': user.username,
     })
 
