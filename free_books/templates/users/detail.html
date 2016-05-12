@@ -5,7 +5,7 @@
 <div class="actions">
     <div><a href="{% url 'user_edit' anuser.id %}">{% trans 'Edit profile' %}</a></div>
     <div><a href="{% url 'user_settings' anuser.id %}">{% trans 'Account settings' %}</a></div>
-<div>
+</div>
 {% endif %}
 <div class="main">
     <div>{% trans "Reputation" %}: {{ anuser.profile.reputation }}</div>
@@ -13,8 +13,7 @@
     <div>{% trans "Date joined" %}: {{ anuser.date_joined }}</div>
     <div>{% trans "Profile last edited" %}: {{ anuser.profile.last_edited }}</div>
     <div>{% trans "About" %}:</div>
-    <pre>
-    {{ user.profile.about }}
+    <pre>{{ user.profile.about }}
     </pre>
 </div>
 {% endblock %}

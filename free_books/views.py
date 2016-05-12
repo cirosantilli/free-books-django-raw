@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
-from .models import Article, ArticleForm, UserForm
+from .models import Article, ArticleForm, UserForm, ProfileForm
 from .permissions import has_perm
 from .util import Http401, website_name
 
@@ -107,17 +107,21 @@ def user_edit(request, user_id):
     if not has_perm(request.user, 'user_edit', user):
         return Http401()
     if request.method == 'POST':
-        form = UserForm(request.POST, instance=user)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.last_edited = timezone.now()
-            user.save()
+        user_form = UserForm(request.POST, instance=user, prefix='user')
+        profile_form = ProfileForm(request.POST, instance=user.profile, prefix='profile')
+        if user_form.is_valid() and profile_form.is_valid():
+            user = user_form.save()
+            profile = profile_form.save(commit=False)
+            profile.last_edited = timezone.now()
+            profile.save()
             return redirect(user)
         # TODO else? Or does it throw?
     else:
-        form = UserForm(instance=user)
+        user_form = UserForm(instance=user, prefix='user')
+        profile_form = ProfileForm(instance=user.profile, prefix='profile')
     return render(request, 'users/new.html', {
-        'form': form,
+        'user_form': user_form,
+        'profile_form': profile_form,
         'form_action': reverse('user_edit', args=[user.id]),
         'submit_value': _('Save changes'),
         'title': _('User') + ' ' + user.username,
