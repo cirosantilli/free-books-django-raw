@@ -22,7 +22,7 @@ And those blog apps have many blog-specific features which we don't need, which 
     heroku create "$APP_NAME"
     heroku addons:create heroku-postgresql:hobby-dev
     git push heroku master
-    heroku run 'python manage.py sqlclear | ./manage.py dbshell'
+    # TODO drop / truncate database if one exists.
     heroku run python manage.py migrate
     heroku run python manage.py generate_data
     firefox "http://${APP_NAME}.herokuapps.com"

@@ -19,9 +19,10 @@ could be used but is a pain as you need one call per app.
 TRUNCATE would work as well, but it is not possible to do it:
 http://stackoverflow.com/questions/2988997/how-do-i-truncate-table-using-django-orm
 """
-User.objects.all().delete()
+# User.objects.all().delete()
 
 nusers = 100
+narticles = nusers * 10
 
 def users_iterator():
     for i in range(nusers):
