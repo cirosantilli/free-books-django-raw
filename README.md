@@ -16,6 +16,7 @@ And those blog apps have many blog-specific features which we don't need, which 
 
 ## Heroku deployment
 
+    sudo apt-get intall postgresql libpq-dev
     heroku login
     heroku create cirosantilli-free-books
     heroku addons:create heroku-postgresql:hobby-dev
