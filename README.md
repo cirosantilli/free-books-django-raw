@@ -2,9 +2,29 @@
 
 <https://githiub.com/cirosantilli/write-free-science-books-to-get-famous-website> **early** prototype using raw Django as base, i.e. no pre-made Django site.
 
-How to run it: <https://github.com/cirosantilli/django-cheat2/blob/1c1dfcee6c27d483def5b6a1e873c4fc63886fba/getting-started.md>
+## Getting started
+
+How to run it:
+
+    sudo apt-get intall postgresql libpq-dev
+    sudo pip install --upgrade virtualenv
+    virtualenv -p python3.5 .venv
+    . .env/bin/activate
+    pip install -r requirements.txt
+    python manage.py migrate
+    # TODO drop / truncate database if one exists.
+    # http://stackoverflow.com/questions/3414247/django-drop-all-tables-from-database
+    python manage.py generate_data
+    firefox localhost:8000
+
+Now login with:
+
+- username: `user0` for an admin, or `user{1-100}` for non-admins
+- password: `asdfqwer` for everyone
 
 Tested on Ubuntu 16.04, Python 3.5.
+
+## About
 
 This is basically a simple multi-user blog.
 
@@ -17,12 +37,10 @@ And those blog apps have many blog-specific features which we don't need, which 
 ## Heroku deployment
 
     APP_NAME='cirosantilli-free-books'
-    sudo apt-get intall postgresql libpq-dev
     heroku login
     heroku create "$APP_NAME"
     heroku addons:create heroku-postgresql:hobby-dev
     git push heroku master
-    # TODO drop / truncate database if one exists.
     heroku run python manage.py migrate
     heroku run python manage.py generate_data
     firefox "http://${APP_NAME}.herokuapps.com"
