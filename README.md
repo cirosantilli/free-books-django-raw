@@ -16,8 +16,13 @@ And those blog apps have many blog-specific features which we don't need, which 
 
 ## Heroku deployment
 
+    APP_NAME='cirosantilli-free-books'
     sudo apt-get intall postgresql libpq-dev
     heroku login
-    heroku create cirosantilli-free-books
+    heroku create "$APP_NAME"
     heroku addons:create heroku-postgresql:hobby-dev
     git push heroku master
+    heroku run 'python manage.py sqlclear | ./manage.py dbshell'
+    heroku run python manage.py migrate
+    heroku run python manage.py generate_data
+    firefox "http://${APP_NAME}.herokuapps.com"
