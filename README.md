@@ -13,3 +13,10 @@ We could consider using existing Django libraries as a basis, e.g.: <https://www
 But yeah, if you can't make a blog app, you can't make any app.
 
 And those blog apps have many blog-specific features which we don't need, which adds time to find the ones that matter.
+
+## Heroku deployment
+
+    heroku login
+    heroku create cirosantilli-free-books
+    heroku addons:create heroku-postgresql:hobby-dev
+    git push heroku master
