@@ -16,7 +16,11 @@ h1 {
     margin-bottom: 5px;
 }
 a:not(:hover) {
-  text-decoration: none;
+    text-decoration: none;
+}
+form label {
+    display:block;
+    margin-bottom: 5px;
 }
 nav .login {
     border-bottom: 1px solid black;

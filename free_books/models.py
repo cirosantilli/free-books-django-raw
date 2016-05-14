@@ -6,6 +6,13 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.forms import ModelForm
 
+# Remove colon from labels
+# http://stackoverflow.com/a/11622672/895245
+class MyModelForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('label_suffix', '')
+        super().__init__(*args, **kwargs)
+
 class Article(models.Model):
     body = models.TextField()
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -19,7 +26,7 @@ class Article(models.Model):
     # TODO enforce non-empty title and body here, currently only done for GUI.
     # Then write test for it.
 
-class ArticleForm(ModelForm):
+class ArticleForm(MyModelForm):
     class Meta:
         model = Article
         fields = ['title', 'body']
@@ -37,12 +44,12 @@ class Profile(models.Model):
     def real_name(self):
         return self.user.first_name + ' ' + self.user.last_name
 
-class UserForm(ModelForm):
+class UserForm(MyModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name']
 
-class ProfileForm(ModelForm):
+class ProfileForm(MyModelForm):
     class Meta:
         model = Profile
         fields = ['about']
