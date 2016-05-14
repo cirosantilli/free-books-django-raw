@@ -1,0 +1,19 @@
+<div class="pagination">
+    <span class="step-links">
+        {% if objects.has_previous %}
+            {% if 1 != objects.number %}
+                <a href="?{%  url_set_params page=1 %}">{{ "<<" | escape }}</a> |
+            {% endif %}
+            <a href="?{%  url_set_params page=objects.previous_page_number %}">{{ "<" | escape }}</a> |
+        {% endif %}
+        <span class="current">
+            {{ objects.number }} / {{ objects.paginator.num_pages }}
+        </span>
+        {% if objects.has_next %}
+            | <a href="?{%  url_set_params page=objects.next_page_number %}">{{ ">" | escape }}</a>
+            {% if objects.paginator.num_pages != objects.number %}
+                | <a href="?{% url_set_params page=objects.paginator.num_pages %}">{{ ">>" | escape }}</a>
+            {% endif %}
+        {% endif %}
+    </span>
+</div>

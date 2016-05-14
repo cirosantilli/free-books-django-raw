@@ -19,11 +19,12 @@
             <td><a href="{% url 'article_detail' article.id %}">{{ article.title }}</a></td>
             <td>{% user_link article.creator %}</td>
             <td>{{ article.pub_date }}</td>
-            <td>{{ article.last_edited }}</td>
-        </tr>
-    {% endfor %}
-    </table>
+        <td>{{ article.last_edited }}</td>
+    </tr>
+{% endfor %}
+</table>
+    {% include "pagination.html" with objects=articles %}
 {% else %}
-<div>{% trans "There are no articles that you can see" %}</div>
+    <div>{% trans "There are no articles that you can see" %}</div>
 {% endif %}
 {% endblock %}

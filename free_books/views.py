@@ -11,13 +11,13 @@ from django.utils.translation import ugettext as _
 
 from .models import Article, ArticleForm, UserForm, ProfileForm
 from .permissions import has_perm
-from .util import Http401, render_markup_safe, website_name
+from .util import get_page, Http401, render_markup_safe, website_name
 
 def home(request):
     return render(request, 'home.html', {'title': website_name})
 
 def article_index(request):
-    articles = Article.objects.order_by('-pub_date')[:100]
+    articles = get_page(request, Article.objects.order_by('-pub_date'), 25)
     return render(request, 'articles/index.html', {
         'articles': articles,
         'show_new': has_perm(request.user, 'article_new'),
@@ -88,8 +88,7 @@ def article_delete(request, article_id):
         return HttpResponseNotAllowed()
 
 def user_index(request):
-    users = User.objects.order_by('-date_joined')[:100]
-    print(users[0].profile.last_edited);
+    users = get_page(request, User.objects.order_by('-date_joined'), 25)
     return render(request, 'users/index.html', {
         'users': users,
         'title': _('Users'),
