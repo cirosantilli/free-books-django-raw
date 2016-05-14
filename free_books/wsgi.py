@@ -11,6 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
+# https://devcenter.heroku.com/articles/django-assets
 from whitenoise.django import DjangoWhiteNoise
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "free_books.settings")

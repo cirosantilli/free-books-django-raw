@@ -13,7 +13,9 @@ How to run it:
     pip install -r requirements.txt
     python manage.py migrate
     # TODO drop / truncate database if one exists.
+    # Find a better method (more portable and faster)
     # http://stackoverflow.com/questions/3414247/django-drop-all-tables-from-database
+    rm db.sqlite3 && ./manage.py migrate
     python manage.py generate_data
     firefox localhost:8000
 

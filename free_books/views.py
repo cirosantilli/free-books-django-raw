@@ -117,7 +117,7 @@ def user_edit(request, user_id):
             profile = profile_form.save(commit=False)
             profile.last_edited = timezone.now()
             profile.save()
-            return redirect(user)
+            return redirect(user.profile)
         # TODO else? Or does it throw?
     else:
         user_form = UserForm(instance=user, prefix='user')

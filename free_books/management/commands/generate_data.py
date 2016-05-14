@@ -26,26 +26,38 @@ narticles = nusers * 10
 
 def users_iterator():
     for i in range(nusers):
-        is_superuser = (i == 0)
+        n = i + 1
+        is_superuser = (n == 1)
         user = User(
-            first_name='First' + str(i),
+            first_name='First' + str(n),
             is_staff=is_superuser,
             is_superuser=is_superuser,
-            last_name='Last' + str(i),
-            username='user' + str(i),
+            last_name='Last' + str(n),
+            username='user' + str(n),
         )
         user.set_password('asdfqwer')
         yield user
 
 def profiles_iterator():
     for i in range(nusers):
+        n = i + 1
         yield Profile(
-            about='About +' + str(i),
-            reputation=i * 10,
-            user=User.objects.get(pk=i + 1)
+            about='About ' + str(n),
+            reputation=(n * 10),
+            user=User.objects.get(pk=n)
+        )
+
+def articles_iterator():
+    for i in range(narticles):
+        n = i + 1
+        yield Article(
+            body='Body ' + str(n),
+            title='Title ' + str(n),
+            creator=User.objects.get(pk=(1 + (i % nusers)))
         )
 
 class Command(BaseCommand):
     def handle(self, **options):
         User.objects.bulk_create(iter(users_iterator()))
         Profile.objects.bulk_create(iter(profiles_iterator()))
+        Article.objects.bulk_create(iter(articles_iterator()))
