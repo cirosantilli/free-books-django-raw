@@ -2,17 +2,21 @@
     <span class="step-links">
         {% if objects.has_previous %}
             {% if 1 != objects.number %}
-                <a href="?{%  url_set_params page=1 %}">{{ "<<" | escape }}</a> |
+                <a href="?{%  url_set_params page=1 %}"
+                        title="{% trans "First page" %}" >{{ "<<" | escape }}</a> |
             {% endif %}
-            <a href="?{%  url_set_params page=objects.previous_page_number %}">{{ "<" | escape }}</a> |
+            <a href="?{%  url_set_params page=objects.previous_page_number %}"
+                    title="{% trans "Previous page" %}">{{ "<" | escape }}</a> |
         {% endif %}
         <span class="current">
             {{ objects.number }} / {{ objects.paginator.num_pages }}
         </span>
         {% if objects.has_next %}
-            | <a href="?{%  url_set_params page=objects.next_page_number %}">{{ ">" | escape }}</a>
+        | <a href="?{%  url_set_params page=objects.next_page_number %}"
+                title="{% trans "Next page" %}">{{ ">" | escape }}</a>
             {% if objects.paginator.num_pages != objects.number %}
-                | <a href="?{% url_set_params page=objects.paginator.num_pages %}">{{ ">>" | escape }}</a>
+                | <a href="?{% url_set_params page=objects.paginator.num_pages %}"
+                        title="{% trans "Last page" %}">{{ ">>" | escape }}</a>
             {% endif %}
         {% endif %}
     </span>
