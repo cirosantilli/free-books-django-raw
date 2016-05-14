@@ -17,7 +17,8 @@ def home(request):
     return render(request, 'home.html', {'title': website_name})
 
 def article_index(request):
-    articles = get_page(request, Article.objects.order_by('-pub_date'), 25)
+    articles = Article.objects.filter(creator__username=request.GET.get('creator')).order_by('-pub_date')
+    articles = get_page(request, articles, 25)
     return render(request, 'articles/index.html', {
         'articles': articles,
         'show_new': has_perm(request.user, 'article_new'),

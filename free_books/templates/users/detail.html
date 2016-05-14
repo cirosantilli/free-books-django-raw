@@ -8,6 +8,7 @@
 </div>
 {% endif %}
 <div class="main">
+    <div><a href="{% url 'article_index' %}?{%  url_set_params creator=anuser.username %}">{% trans "Articles" %}</a></div>
     <div class="metadata">
         <div>{% trans "Reputation" %}: {{ anuser.profile.reputation }}</div>
         <div>{% trans "Real name" %}: {{ user.profile.real_name }}</div>
