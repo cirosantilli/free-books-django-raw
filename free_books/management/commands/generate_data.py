@@ -43,7 +43,7 @@ def profiles_iterator():
         n = i + 1
         yield Profile(
             about='About ' + str(n),
-            reputation=(n * 10),
+            linear_reputation=(n * 10),
             user=User.objects.get(pk=n)
         )
 

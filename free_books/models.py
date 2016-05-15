@@ -17,7 +17,7 @@ class Profile(models.Model):
     about = models.TextField()
     last_edited = models.DateTimeField(auto_now_add=True, blank=True)
     # This is just a cache, but definitely required as it is an expensive value to calculate.
-    reputation = models.BigIntegerField(default=0)
+    linear_reputation = models.BigIntegerField(default=0)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     def __str__(self):
         return self.user.username
