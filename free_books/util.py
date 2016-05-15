@@ -1,5 +1,6 @@
 from markdown2 import markdown
 
+from django.utils.text import capfirst
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
 from django.utils.html import mark_safe
@@ -15,6 +16,19 @@ def get_page(request, objects, per_page):
     except EmptyPage:
         objects = paginator.page(paginator.num_pages)
     return objects
+
+def get_verbose(cls, field_name):
+    """
+    Get the capitalized verbose name of a field of a class.
+    """
+    return capfirst(cls._meta.get_field(field_name).verbose_name)
+
+def get_verboses(cls, field_name):
+    """
+    Get the capitalized verbose name of a field of a class.
+    """
+    return capfirst(cls._meta.get_field(field_name).verbose_name)
+
 
 def render_markup_safe(markup):
     return mark_safe(markdown(markup, safe_mode=True))

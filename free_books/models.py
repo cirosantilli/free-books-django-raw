@@ -15,7 +15,7 @@ class MyModelForm(ModelForm):
 
 class Profile(models.Model):
     about = models.TextField()
-    last_edited = models.DateTimeField(auto_now_add=True, blank=True)
+    last_edited = models.DateTimeField(auto_now_add=True, blank=True, verbose_name='profile last edited')
     # This is just a cache, but definitely required as it is an expensive value to calculate.
     linear_reputation = models.BigIntegerField(default=0)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -59,7 +59,7 @@ class Article(models.Model):
     body = models.TextField()
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='article_creator')
     last_edited = models.DateTimeField(auto_now_add=True, blank=True)
-    pub_date = models.DateTimeField(auto_now_add=True, blank=True)
+    date_published = models.DateTimeField(auto_now_add=True, blank=True)
     title = models.CharField(max_length=256)
     votes = models.ManyToManyField(User, through='ArticleVote', related_name='article_votes')
     def __str__(self):

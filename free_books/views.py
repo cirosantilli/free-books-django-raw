@@ -9,9 +9,9 @@ from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
 
-from .models import Article, ArticleForm, ArticleVote, ArticleVoteForm, UserForm, ProfileForm
+from .models import Article, ArticleForm, ArticleVote, ArticleVoteForm, UserForm, Profile, ProfileForm
 from .permissions import has_perm
-from .util import get_page, Http401, render_markup_safe, website_name
+from .util import get_page, get_verbose, Http401, render_markup_safe, website_name
 
 def home(request):
     return render(request, 'home.html', {'title': website_name})
@@ -23,7 +23,7 @@ def about(request):
     return render(request, 'about.html', {'title': _('About')})
 
 def article_index(request):
-    articles = Article.objects.order_by('-pub_date')
+    articles = Article.objects.order_by('-date_published')
     creator = request.GET.get('creator')
     if creator:
         articles = articles.filter(creator__username=creator)
@@ -32,6 +32,7 @@ def article_index(request):
         'articles': articles,
         'show_new': has_perm(request.user, 'article_new'),
         'title': _('Articles'),
+        'verbose_names': [get_verbose(Article, v) for v in ['title', 'creator', 'date_published', 'last_edited']]
     })
 
 def article_detail(request, article_id):
@@ -140,6 +141,12 @@ def user_index(request):
     return render(request, 'users/index.html', {
         'users': users,
         'title': _('Users'),
+        'verbose_names': [
+            get_verbose(User, 'username'),
+            get_verbose(Profile, 'linear_reputation'),
+            _('Real name'),
+            get_verbose(User, 'date_joined'),
+            get_verbose(Profile, 'last_edited')],
     })
 
 def user_detail(request, user_id):
