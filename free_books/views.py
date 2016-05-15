@@ -36,14 +36,17 @@ def article_index(request):
 
 def article_detail(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
+    user = request.user
     return render(request, 'articles/detail.html', {
         'ArticleVote': ArticleVote,
         'article': article,
         'body': render_markup_safe(article.body),
-        'show_delete': has_perm(request.user, 'article_delete', article),
-        'show_edit': has_perm(request.user, 'article_edit', article),
-        'show_new': has_perm(request.user, 'article_new'),
-        'show_vote': has_perm(request.user, 'article_vote', article),
+        'has_downvoted': user.profile.has_downvoted(article),
+        'has_upvoted': user.profile.has_upvoted(article),
+        'show_delete': has_perm(user, 'article_delete', article),
+        'show_edit': has_perm(user, 'article_edit', article),
+        'show_new': has_perm(user, 'article_new'),
+        'show_vote': has_perm(user, 'article_vote', article),
         'title': article.title,
     })
 
@@ -98,6 +101,11 @@ def article_delete(request, article_id):
     return HttpResponseNotFound()
 
 def article_vote(request, article_id):
+    """
+    - (type, value) does not exist     -> create vote
+    - (type, value) exists             -> delete vote
+    - type exists with different value -> change vote value
+    """
     article = get_object_or_404(Article, pk=article_id)
     if (has_perm(request.user, 'article_vote', article)
             and request.method == 'POST'):
@@ -115,10 +123,14 @@ def article_vote(request, article_id):
             vote = None
         form = ArticleVoteForm(post, instance=vote)
         if form.is_valid():
-            print('here')
-            vote = form.save(commit=False)
-            vote.date_created = timezone.now()
-            vote.save()
+            new_vote = form.save(commit=False)
+            # TODO can't get that new_vote value no matter what!
+            if vote.value == new_vote['value']:
+                vote.delete()
+                return HttpResponse()
+            else:
+                new_vote.date_created = timezone.now()
+                new_vote.save()
             return HttpResponse()
     return HttpResponseNotFound()
 

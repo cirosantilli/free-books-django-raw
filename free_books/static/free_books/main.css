@@ -14,7 +14,7 @@ th {
 }
 h1 {
     border-bottom: 1px solid black;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
 }
 a:not(:hover) {
     text-decoration: none;
@@ -50,4 +50,10 @@ footer {
     margin-top: 50px;
     padding-bottom: 5px;
     padding-top: 5px;
+}
+.onoff.on .off {
+    display: none;
+}
+.onoff:not(.on) .on {
+    display: none;
 }

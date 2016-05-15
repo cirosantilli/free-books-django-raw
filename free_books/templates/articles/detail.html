@@ -2,32 +2,36 @@
 
 {% block content %}
 <div class="actions" >
-    <div>{% trans "Net votes" %}: {{ article.net_votes }}</div>
+    <div>{% trans "Net votes" %}: <span id="net-votes">{{ article.net_votes }}</span></div>
     <div>
         {% if show_vote %}
         <a href="{% url 'article_vote' article.id %}"
-                class="vote"
+                class="vote onoff {% if not has_upvoted %}on{% endif %}"
                 data-type="{{ ArticleVote.LIKE }}"
-                data-value="{{ ArticleVote.UPVOTE }}" >
+                data-value="{{ ArticleVote.UPVOTE }}"
+                id="upvote-onoff" >
         {% endif %}
-                {% trans 'Upvote' %}
+                    <span class="on" id="upvote" >{% trans 'Upvote' %}</span>
         {% if show_vote %}
+                    <span class="off" id="undo-upvote" >{% trans 'Undo upvote' %}</span>
             </a>
         {% endif %}
-        ({{ article.upvote_count }})
+        (<span id="upvote-count">{{ article.upvote_count }}</span>)
     </div>
     <div>
         {% if show_vote %}
-            <a href="{% url 'article_vote' article.id %}"
-                    class="vote"
-                    data-type="{{ ArticleVote.LIKE }}"
-                    data-value="{{ ArticleVote.DOWNVOTE }}" >
+        <a href="{% url 'article_vote' article.id %}"
+                class="vote onoff {% if not has_downvoted %}on{% endif %}"
+                data-type="{{ ArticleVote.LIKE }}"
+                data-value="{{ ArticleVote.DOWNVOTE }}"
+                id="downvote-onoff" >
         {% endif %}
-                {% trans 'Downvote' %}
+                    <span class="on" id="downvote" >{% trans 'Downvote' %}</span>
         {% if show_vote %}
+                    <span class="off" id="undo-downvote" >{% trans 'Undo downvote' %}</span>
             </a>
         {% endif %}
-        ({{ article.downvote_count }})
+        (<span id="downvote-count">{{ article.downvote_count }}</span>)
     </div>
     {% if show_edit %}
         <div><a href="{% url 'article_edit' article.id %}">{% trans 'Edit article' %}</a></div>

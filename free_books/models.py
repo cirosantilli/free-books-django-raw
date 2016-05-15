@@ -26,6 +26,18 @@ class Profile(models.Model):
     @property
     def real_name(self):
         return self.user.first_name + ' ' + self.user.last_name
+    def has_upvoted(self, article):
+        return ArticleVote.objects.filter(
+                article=article,
+                type=ArticleVote.LIKE,
+                user=self.user,
+                value=ArticleVote.UPVOTE).exists()
+    def has_downvoted(self, article):
+        return ArticleVote.objects.filter(
+                article=article,
+                type=ArticleVote.LIKE,
+                user=self.user,
+                value=ArticleVote.DOWNVOTE).exists()
 
 class UserForm(MyModelForm):
     class Meta:

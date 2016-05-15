@@ -3,10 +3,17 @@
 {% block content %}
 <h2 id="linear-reputation">Linear reputation</h2>
 <p>The simplest possible reputation: it just adds up all upvotes on all your articles by any user.</p>
-<p>Since this reputation is easy to calculate, it gets updated immediately when you get an upvote.</p>
-<p>The downside of this reputation is that it is easy to game it with bots, so it is not very meaningful.</p>
-<p>
-    Furthermore, this reputation does not take into account who upvoted you.
-    E.g., an upvote from Einstein will have the same weight as that of a mere mortal.
-</p>
+<p>Advantage: since this reputation is easy to calculate, it gets updated immediately when you get an upvote.</p>
+<p>Disadvantages:</p>
+<ul>
+    <li>The downside of this reputation is that it is easy to game it with bots, so it is not very meaningful.</li>
+    <li>
+        Furthermore, this reputation does not take into account who upvoted you.
+        E.g., an upvote from Einstein will have the same weight as that of a mere mortal.
+    </li>
+    <li>
+        Time is not taken into accoutn. Old upvotes are as important as new upvotes.
+        This matters more in domains that change rapidly like certain technologies.
+    </li>
+</ul>
 {% endblock %}
