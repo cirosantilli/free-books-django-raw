@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 from .models import Article, ArticleForm, ArticleVote, ArticleVoteForm, UserForm, Profile, ProfileForm
 from .permissions import has_perm
-from .util import get_page, get_verbose, get_verboses, Http401, render_markup_safe, website_name
+from .util import filter_by_get, get_page, get_verbose, get_verboses, Http401, render_markup_safe, website_name
 
 def home(request):
     return render(request, 'home.html', {'title': website_name})
@@ -24,9 +24,7 @@ def about(request):
 
 def article_index(request):
     articles = Article.objects.order_by('-date_published')
-    creator = request.GET.get('creator')
-    if creator:
-        articles = articles.filter(creator__username=creator)
+    articles = filter_by_get(articles, request, (('creator__username', 'creator'),))
     articles = get_page(request, articles, 25)
     return render(request, 'articles/index.html', {
         'articles': articles,
@@ -152,6 +150,7 @@ def user_index(request):
 def user_detail(request, user_id):
     user = get_object_or_404(User, pk=user_id)
     return render(request, 'users/detail.html', {
+        'ArticleVote': ArticleVote,
         'anuser': user,
         'about': render_markup_safe(user.profile.about),
         'show_edit': has_perm(request.user, 'user_edit', user),
@@ -191,13 +190,11 @@ def user_settings(request, user_id):
 
 def article_vote_index(request):
     votes = ArticleVote.objects.order_by('-date_created')
-    # creator = request.GET.get('creator')
-    # if creator:
-        # articles = articles.filter(creator__username=creator)
-    # articles = get_page(request, articles, 25)
+    votes = filter_by_get(votes, request, (('article__id', 'article'), ('value', 'value'), ('user__username', 'user')))
+    votes = get_page(request, votes, 25)
     return render(request, 'article_votes/index.html', {
         'votes': votes,
-        'title': _('Article votes'),
+        'title': _('Votes'),
         'verbose_names': [get_verbose(cls, name) for cls, name in (
             (User, 'username'),
             (Article, 'title'),

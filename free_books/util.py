@@ -6,6 +6,13 @@ from django.http import HttpResponse
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
 
+def filter_by_get(objs, request, fields):
+    """
+    Filter objects by GET request parameters.
+    """
+    GET = request.GET
+    return objs.filter(**{key:GET.get(val) for key,val in fields if GET.get(val)})
+
 def get_page(request, objects, per_page):
     paginator = Paginator(objects, per_page)
     page = request.GET.get('page')

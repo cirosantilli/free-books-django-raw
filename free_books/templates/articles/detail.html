@@ -2,7 +2,12 @@
 
 {% block content %}
 <div class="actions" >
-    <div>{% trans "Net votes" %}: <span id="net-votes">{{ article.net_votes }}</span></div>
+    <div>
+        {% trans "Net votes" %}:
+        <a href="{% url 'article_vote_index' %}?{% url_set_params article=article.id %}">
+            <span id="net-votes">{{ article.net_votes }}</span>
+        </a>
+    </div>
     <div>
         {% if show_vote %}
         <a href="{% url 'article_vote' article.id %}"
@@ -16,7 +21,9 @@
                     <span class="off" id="undo-upvote" >{% trans 'Undo upvote' %}</span>
             </a>
         {% endif %}
-        (<span id="upvote-count">{{ article.upvote_count }}</span>)
+        (<a href="{% url 'article_vote_index' %}?{% url_set_params article=article.id value=ArticleVote.UPVOTE %}"
+            ><span id="upvote-count">{{ article.upvote_count }}</span
+        ></a>)
     </div>
     <div>
         {% if show_vote %}
@@ -31,7 +38,9 @@
                     <span class="off" id="undo-downvote" >{% trans 'Undo downvote' %}</span>
             </a>
         {% endif %}
-        (<span id="downvote-count">{{ article.downvote_count }}</span>)
+        (<a href="{% url 'article_vote_index' %}?{% url_set_params article=article.id value=ArticleVote.DOWNVOTE %}"
+            ><span id="downvote-count">{{ article.downvote_count }}</span
+        ></a>)
     </div>
     {% if show_edit %}
         <div><a href="{% url 'article_edit' article.id %}">{% trans 'Edit article' %}</a></div>
