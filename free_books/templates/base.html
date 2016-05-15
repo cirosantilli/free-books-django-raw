@@ -35,5 +35,9 @@
         {% if error_message %}<div>{{ error_message }}</div>{% endif %}
         {% block content %}{% endblock %}
     </main>
+    <footer>
+        <a href="{% url 'about' %}" >{% trans "About" %}</a> |
+        <a href="{% url 'help' %}" >{% trans "Help" %}</a>
+    </footer>
 </body>
 </html>

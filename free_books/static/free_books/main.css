@@ -43,8 +43,11 @@ main .metadata {
     padding-bottom: 2px;
     margin-bottom: 5px;
 }
-main .body {
+footer {
     border-bottom: 1px solid black;
-    padding-bottom: 2px;
-    margin-bottom: 5px;
+    border-top: 1px solid black;
+    margin-bottom: 10px;
+    margin-top: 50px;
+    padding-bottom: 5px;
+    padding-top: 5px;
 }

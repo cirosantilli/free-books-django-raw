@@ -6,7 +6,9 @@ from . import views
 urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^', include('django.contrib.auth.urls')),
+    url(r'^about/$', views.about, name='about'),
     url(r'^admin/', admin.site.urls),
+    url(r'^help/$', views.help, name='help'),
 ]
 
 prefix = r'a'
@@ -31,3 +33,8 @@ urlpatterns.extend([
     # This must be impossible to prevent content loss.
     # url(r'^' + prefix + '/' + id + '/delete$', views.user_delete, name='user_delete'),
 ])
+
+prefix = r'help'
+urlpatterns.extend([
+])
+

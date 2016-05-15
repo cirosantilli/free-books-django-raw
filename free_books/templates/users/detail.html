@@ -10,7 +10,8 @@
 <div class="main">
     <div><a href="{% url 'article_index' %}?{%  url_set_params creator=anuser.username %}">{% trans "Articles" %}</a></div>
     <div class="metadata">
-        <div>{% trans "Linear reputation" %}: {{ anuser.profile.linear_reputation }}</div>
+        <div><a href="{% url 'help' %}#linear-reputation">{% trans "Linear reputation" %}</a>:
+            {{ anuser.profile.linear_reputation }}</div>
         <div>{% trans "Real name" %}: {{ user.profile.real_name }}</div>
         <div>{% trans "Date joined" %}: {{ anuser.date_joined }}</div>
         <div>{% trans "Profile last edited" %}: {{ anuser.profile.last_edited }}</div>

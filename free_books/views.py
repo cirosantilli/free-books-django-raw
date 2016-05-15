@@ -16,6 +16,12 @@ from .util import get_page, Http401, render_markup_safe, website_name
 def home(request):
     return render(request, 'home.html', {'title': website_name})
 
+def help(request):
+    return render(request, 'help.html', {'title': _('Help')})
+
+def about(request):
+    return render(request, 'about.html', {'title': _('About')})
+
 def article_index(request):
     articles = Article.objects.order_by('-pub_date')
     creator = request.GET.get('creator')
