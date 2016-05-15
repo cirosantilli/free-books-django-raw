@@ -1,21 +1,46 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if show_new or show_edit or show_delete %}
 <div class="actions" >
+    <div>{% trans "Net votes" %}: {{ article.net_votes }}</div>
+    <div>
+        {% if show_vote %}
+        <a href="{% url 'article_vote' article.id %}"
+                class="vote"
+                data-type="{{ ArticleVote.LIKE }}"
+                data-value="{{ ArticleVote.UPVOTE }}" >
+        {% endif %}
+                {% trans 'Upvote' %}
+        {% if show_vote %}
+            </a>
+        {% endif %}
+        ({{ article.upvote_count }})
+    </div>
+    <div>
+        {% if show_vote %}
+            <a href="{% url 'article_vote' article.id %}"
+                    class="vote"
+                    data-type="{{ ArticleVote.LIKE }}"
+                    data-value="{{ ArticleVote.DOWNVOTE }}" >
+        {% endif %}
+                {% trans 'Downvote' %}
+        {% if show_vote %}
+            </a>
+        {% endif %}
+        ({{ article.downvote_count }})
+    </div>
     {% if show_edit %}
-    <div><a href="{% url 'article_edit' article.id %}">{% trans 'Edit article' %}</a></div>
+        <div><a href="{% url 'article_edit' article.id %}">{% trans 'Edit article' %}</a></div>
     {% endif %}
     {% if show_delete %}
-    <form action="{% url 'article_delete' article.id %}" method="post"
-            onsubmit="return confirm('{% trans "Are you sure?" %}');">
-        {% csrf_token %}
-        <input type="submit" value="{% trans "Delete article" %}" />
-    </form>
+        <form action="{% url 'article_delete' article.id %}" method="post"
+                onsubmit="return confirm('{% trans "Are you sure?" %}');">
+            {% csrf_token %}
+            <input type="submit" value="{% trans "Delete article" %}" />
+        </form>
     {% endif %}
     {% include 'articles/new_link.html' %}
 </div>
-{% endif %}
 <div class="main">
     <div class="metadata">
         <div>{% trans "Creator" %}: {% user_link article.creator %}</div>

@@ -5,9 +5,11 @@
 <head>
     <meta charset="utf-8"/>
     <title>{{ title }} - {{ website_name }}</title>
-    <link rel="stylesheet" href="{% static 'free_books/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'free_books/main.css' %}" />
+    <script src="{% static 'free_books/main.js' %}" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js" ></script>
 </head>
-<body>
+<body data-view="{{ request.resolver_match.url_name }}">
     <header>
         <nav>
             <div class="login">

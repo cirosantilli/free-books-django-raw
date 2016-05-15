@@ -3,13 +3,13 @@ import datetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
 
-from .models import Article, ArticleForm, UserForm, ProfileForm
+from .models import Article, ArticleForm, ArticleVote, ArticleVoteForm, UserForm, ProfileForm
 from .permissions import has_perm
 from .util import get_page, Http401, render_markup_safe, website_name
 
@@ -17,7 +17,10 @@ def home(request):
     return render(request, 'home.html', {'title': website_name})
 
 def article_index(request):
-    articles = Article.objects.filter(creator__username=request.GET.get('creator')).order_by('-pub_date')
+    articles = Article.objects.order_by('-pub_date')
+    creator = request.GET.get('creator')
+    if creator:
+        articles = articles.filter(creator__username=creator)
     articles = get_page(request, articles, 25)
     return render(request, 'articles/index.html', {
         'articles': articles,
@@ -28,11 +31,13 @@ def article_index(request):
 def article_detail(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
     return render(request, 'articles/detail.html', {
+        'ArticleVote': ArticleVote,
         'article': article,
         'body': render_markup_safe(article.body),
         'show_delete': has_perm(request.user, 'article_delete', article),
         'show_edit': has_perm(request.user, 'article_edit', article),
         'show_new': has_perm(request.user, 'article_new'),
+        'show_vote': has_perm(request.user, 'article_vote', article),
         'title': article.title,
     })
 
@@ -60,7 +65,7 @@ def article_new(request):
 def article_edit(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
     if not has_perm(request.user, 'article_edit', article):
-        return Http401()
+        return HttpResponseNotFound()
     if request.method == 'POST':
         form = ArticleForm(request.POST, instance=article)
         if form.is_valid():
@@ -80,13 +85,36 @@ def article_edit(request, article_id):
 
 def article_delete(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
-    if not has_perm(request.user, 'article_edit', article):
-        return Http401()
-    if request.method == 'POST':
+    if (has_perm(request.user, 'article_delete', article)
+        and request.method == 'POST'):
         article.delete()
         return redirect('article_index')
-    else:
-        return HttpResponseNotAllowed()
+    return HttpResponseNotFound()
+
+def article_vote(request, article_id):
+    article = get_object_or_404(Article, pk=article_id)
+    if (has_perm(request.user, 'article_vote', article)
+            and request.method == 'POST'):
+        user = request.user
+        votes = ArticleVote.objects.filter(
+                article=article,
+                type=request.POST.get('type'),
+                user=user)
+        post = request.POST.copy()
+        post['user'] = user.id
+        post['article'] = article.id
+        if (votes):
+            vote = votes[0]
+        else:
+            vote = None
+        form = ArticleVoteForm(post, instance=vote)
+        if form.is_valid():
+            print('here')
+            vote = form.save(commit=False)
+            vote.date_created = timezone.now()
+            vote.save()
+            return HttpResponse()
+    return HttpResponseNotFound()
 
 def user_index(request):
     users = get_page(request, User.objects.order_by('-date_joined'), 25)
@@ -108,7 +136,7 @@ def user_detail(request, user_id):
 def user_edit(request, user_id):
     user = get_object_or_404(User, pk=user_id)
     if not has_perm(request.user, 'user_edit', user):
-        return Http401()
+        return HttpResponseNotFound()
     if request.method == 'POST':
         user_form = UserForm(request.POST, instance=user, prefix='user')
         profile_form = ProfileForm(request.POST, instance=user.profile, prefix='profile')

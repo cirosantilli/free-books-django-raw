@@ -13,27 +13,10 @@ class MyModelForm(ModelForm):
         kwargs.setdefault('label_suffix', '')
         super().__init__(*args, **kwargs)
 
-class Article(models.Model):
-    body = models.TextField()
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    last_edited = models.DateTimeField(auto_now_add=True, blank=True)
-    pub_date = models.DateTimeField(auto_now_add=True, blank=True)
-    title = models.CharField(max_length=256)
-    def __str__(self):
-        return self.title
-    def get_absolute_url(self):
-        return reverse('article_detail', args=[str(self.id)])
-    # TODO enforce non-empty title and body here, currently only done for GUI.
-    # Then write test for it.
-
-class ArticleForm(MyModelForm):
-    class Meta:
-        model = Article
-        fields = ['title', 'body']
-
 class Profile(models.Model):
     about = models.TextField()
     last_edited = models.DateTimeField(auto_now_add=True, blank=True)
+    # This is just a cache, but definitely required as it is an expensive value to calculate.
     reputation = models.BigIntegerField(default=0)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     def __str__(self):
@@ -60,8 +43,51 @@ def create_profile(sender, instance, created, **kwargs):
 
 post_save.connect(create_profile, sender=User)
 
-# class Tag(models.Model):
+class Article(models.Model):
+    body = models.TextField()
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='article_creator')
+    last_edited = models.DateTimeField(auto_now_add=True, blank=True)
+    pub_date = models.DateTimeField(auto_now_add=True, blank=True)
+    title = models.CharField(max_length=256)
+    votes = models.ManyToManyField(User, through='ArticleVote', related_name='article_votes')
+    def __str__(self):
+        return self.title
+    def get_absolute_url(self):
+        return reverse('article_detail', args=[str(self.id)])
+    def upvote_count(self):
+        return ArticleVote.objects.filter(article=self, type=ArticleVote.LIKE, value=ArticleVote.UPVOTE).count()
+    def downvote_count(self):
+        return ArticleVote.objects.filter(article=self, type=ArticleVote.LIKE, value=ArticleVote.DOWNVOTE).count()
+    def net_votes(self):
+        return self.upvote_count() - self.downvote_count()
+    # TODO enforce non-empty title and body here, currently only done for GUI.
+    # Then write test for it.
 
-# class QuestionsTags(models.Model):
+class ArticleForm(MyModelForm):
+    class Meta:
+        model = Article
+        fields = ['title', 'body']
 
-# class Profile(models.Model):
+class ArticleVote(models.Model):
+    LIKE = 0
+    TYPE_CHOICES = (
+        (LIKE, 'Like'),
+    )
+    UPVOTE = 0
+    DOWNVOTE = 1
+    VALUE_CHOICES = (
+        (UPVOTE, 'Upvote'),
+        (DOWNVOTE, 'Downvote'),
+    )
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True, blank=True)
+    type = models.IntegerField(choices=TYPE_CHOICES, default=UPVOTE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    value = models.IntegerField(choices=VALUE_CHOICES, default=UPVOTE)
+    class Meta:
+        unique_together = ('article', 'type', 'user')
+
+class ArticleVoteForm(MyModelForm):
+    class Meta:
+        model = ArticleVote
+        fields = ['article', 'type', 'user', 'value']

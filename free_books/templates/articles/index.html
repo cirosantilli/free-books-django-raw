@@ -21,8 +21,8 @@
             <td>{{ article.pub_date }}</td>
         <td>{{ article.last_edited }}</td>
     </tr>
-{% endfor %}
-</table>
+    {% endfor %}
+    </table>
     {% include "pagination.html" with objects=articles %}
 {% else %}
     <div>{% trans "There are no articles that you can see" %}</div>

@@ -17,6 +17,7 @@ urlpatterns.extend([
     url(r'^' + prefix + '/' + id + '/$', views.article_detail, name='article_detail'),
     url(r'^' + prefix + '/' + id + '/edit$', views.article_edit, name='article_edit'),
     url(r'^' + prefix + '/' + id + '/delete$', views.article_delete, name='article_delete'),
+    url(r'^' + prefix + '/' + id + '/vote$', views.article_vote, name='article_vote'),
 ])
 
 prefix = r'u'
