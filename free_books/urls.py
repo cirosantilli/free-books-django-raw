@@ -34,7 +34,7 @@ urlpatterns.extend([
     # url(r'^' + prefix + '/' + id + '/delete$', views.user_delete, name='user_delete'),
 ])
 
-prefix = r'help'
+prefix = r'votes'
 urlpatterns.extend([
+    url(r'^' + prefix + '/$', views.article_vote_index, name='article_vote_index'),
 ])
-

@@ -23,12 +23,11 @@ def get_verbose(cls, field_name):
     """
     return capfirst(cls._meta.get_field(field_name).verbose_name)
 
-def get_verboses(cls, field_name):
+def get_verboses(cls, field_names):
     """
     Get the capitalized verbose name of a field of a class.
     """
-    return capfirst(cls._meta.get_field(field_name).verbose_name)
-
+    return [get_verbose(cls, v) for v in field_names]
 
 def render_markup_safe(markup):
     return mark_safe(markdown(markup, safe_mode=True))

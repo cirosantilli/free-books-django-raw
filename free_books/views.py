@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 from .models import Article, ArticleForm, ArticleVote, ArticleVoteForm, UserForm, Profile, ProfileForm
 from .permissions import has_perm
-from .util import get_page, get_verbose, Http401, render_markup_safe, website_name
+from .util import get_page, get_verbose, get_verboses, Http401, render_markup_safe, website_name
 
 def home(request):
     return render(request, 'home.html', {'title': website_name})
@@ -32,7 +32,7 @@ def article_index(request):
         'articles': articles,
         'show_new': has_perm(request.user, 'article_new'),
         'title': _('Articles'),
-        'verbose_names': [get_verbose(Article, v) for v in ['title', 'creator', 'date_published', 'last_edited']]
+        'verbose_names': get_verboses(Article, ['title', 'creator', 'date_published', 'last_edited'])
     })
 
 def article_detail(request, article_id):
@@ -188,3 +188,21 @@ def user_edit(request, user_id):
 def user_settings(request, user_id):
     user = get_object_or_404(User, pk=user_id)
     return render(request, 'users/settings.html', {'title': _('Account settings')})
+
+def article_vote_index(request):
+    votes = ArticleVote.objects.order_by('-date_created')
+    # creator = request.GET.get('creator')
+    # if creator:
+        # articles = articles.filter(creator__username=creator)
+    # articles = get_page(request, articles, 25)
+    return render(request, 'article_votes/index.html', {
+        'votes': votes,
+        'title': _('Article votes'),
+        'verbose_names': [get_verbose(cls, name) for cls, name in (
+            (User, 'username'),
+            (Article, 'title'),
+            # (ArticleVote, 'type'),
+            (ArticleVote, 'value'),
+            (ArticleVote, 'date_created')
+        )]
+    })
