@@ -119,18 +119,19 @@ def article_vote(request, article_id):
         post['article'] = article.id
         if (votes):
             vote = votes[0]
+            old_value = vote.value
         else:
             vote = None
+            old_value = None
         form = ArticleVoteForm(post, instance=vote)
         if form.is_valid():
-            new_vote = form.save(commit=False)
-            # TODO can't get that new_vote value no matter what!
-            if vote.value == new_vote['value']:
+            vote = form.save(commit=False)
+            if old_value == vote.value:
                 vote.delete()
                 return HttpResponse()
             else:
-                new_vote.date_created = timezone.now()
-                new_vote.save()
+                vote.date_created = timezone.now()
+                vote.save()
             return HttpResponse()
     return HttpResponseNotFound()
 

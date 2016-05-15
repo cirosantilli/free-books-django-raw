@@ -33,7 +33,7 @@ window.onload = function() {
                         if (x.readyState == 4) {
                             if (x.status != 200) {
                                 // TODO translate this.
-                                alert('Action failed.');
+                                alert('Action failed. Reload the page and try again.');
                             }
                         }
                     }
