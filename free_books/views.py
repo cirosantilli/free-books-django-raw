@@ -190,7 +190,11 @@ def user_settings(request, user_id):
 
 def article_vote_index(request):
     votes = ArticleVote.objects.order_by('-date_created')
-    votes = filter_by_get(votes, request, (('article__id', 'article'), ('value', 'value'), ('user__username', 'user')))
+    votes = filter_by_get(votes, request, (
+        ('article__id', 'article'),
+        ('value', 'value'),
+        ('user__username', 'user')
+    ))
     votes = get_page(request, votes, 25)
     return render(request, 'article_votes/index.html', {
         'votes': votes,

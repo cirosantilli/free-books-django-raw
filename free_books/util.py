@@ -8,10 +8,18 @@ from django.utils.translation import ugettext as _
 
 def filter_by_get(objs, request, fields):
     """
-    Filter objects by GET request parameters.
+    Filter objects by selected GET request parameters,
+    mostly use for search.
     """
     GET = request.GET
-    return objs.filter(**{key:GET.get(val) for key,val in fields if GET.get(val)})
+    for query_key, get_key in fields:
+        get_val = GET.get(get_key)
+        if get_val:
+            try:
+                objs = objs.filter(**{query_key: get_val})
+            except ValueError:
+                pass
+    return objs
 
 def get_page(request, objects, per_page):
     paginator = Paginator(objects, per_page)
