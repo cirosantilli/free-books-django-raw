@@ -56,7 +56,7 @@ def create_profile(sender, instance, created, **kwargs):
 post_save.connect(create_profile, sender=User)
 
 class Article(models.Model):
-    body = models.TextField()
+    body = models.TextField(max_length=1048576)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='article_creator')
     last_edited = models.DateTimeField(auto_now_add=True, blank=True)
     date_published = models.DateTimeField(auto_now_add=True, blank=True)
