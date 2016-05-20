@@ -111,6 +111,7 @@ class ArticleVote(models.Model):
     )
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True, blank=True)
+    # We might add more types later on, like flagging illegal content.
     type = models.IntegerField(choices=TYPE_CHOICES, default=UPVOTE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     value = models.IntegerField(choices=VALUE_CHOICES, default=UPVOTE)
