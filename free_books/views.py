@@ -141,8 +141,8 @@ def user_index(request):
         'title': _('Users'),
         'verbose_names': [
             get_verbose(User, 'username'),
-            get_verbose(Profile, 'linear_reputation'),
-            _('Real name'),
+            _('Linear Reputation'),
+            _('Real Name'),
             get_verbose(User, 'date_joined'),
             get_verbose(Profile, 'last_edited')],
     })

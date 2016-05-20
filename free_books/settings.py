@@ -31,7 +31,32 @@ SECRET_KEY = 't-o+68a&vy%@242dygu&+jy6#6oo@ow&gj!4oltd$eiy_tuq=0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 ALLOWED_HOSTS = ['localhost']
-# LOGGING =
+
+# Log SQL.
+# http://stackoverflow.com/questions/4375784/log-all-sql-queries
+if False:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'filters': {
+            'require_debug_true': {
+                '()': 'django.utils.log.RequireDebugTrue',
+            }
+        },
+        'handlers': {
+            'console': {
+                'level': 'DEBUG',
+                'filters': ['require_debug_true'],
+                'class': 'logging.StreamHandler',
+            }
+        },
+        'loggers': {
+            'django.db.backends': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+            }
+        }
+    }
 
 INSTALLED_APPS = [
     'django.contrib.admin',
