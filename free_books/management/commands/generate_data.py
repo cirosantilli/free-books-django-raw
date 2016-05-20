@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.management.base import BaseCommand
 
 from free_books.models import Article, Profile, ArticleVote
@@ -23,6 +25,7 @@ http://stackoverflow.com/questions/2988997/how-do-i-truncate-table-using-django-
 
 nusers = 100
 narticles = nusers * 10
+votes_per_user = 9
 
 def users_iterator():
     for i in range(nusers):
@@ -57,21 +60,46 @@ def articles_iterator():
 
 def article_votes_iterator():
     for user_pk in range(1, nusers + 1):
-        for article_pk in range(1, user_pk):
-            if (user_pk % 3) == 0:
+        nvotes = 0
+        article_pk = 1
+        print()
+        print(user_pk)
+        while nvotes < votes_per_user:
+            if (user_pk % 5) == 0:
                 value = ArticleVote.DOWNVOTE
             else:
                 value = ArticleVote.UPVOTE
+            print(article_pk)
             yield ArticleVote(
                 article=Article.objects.get(pk=article_pk),
                 type=ArticleVote.LIKE,
                 value=value,
                 user=User.objects.get(pk=user_pk),
             )
+            nvotes += 1
+            article_pk = 1 + ((nvotes * user_pk) % narticles)
 
 class Command(BaseCommand):
     def handle(self, **options):
+
+        print('users')
+        print(datetime.datetime.now())
         User.objects.bulk_create(iter(users_iterator()))
+        print()
+
+        print('profiles')
+        print(datetime.datetime.now())
         Profile.objects.bulk_create(iter(profiles_iterator()))
+        print()
+
+        print('articles')
+        print(datetime.datetime.now())
         Article.objects.bulk_create(iter(articles_iterator()))
+        print()
+
+        print('article votes')
+        print(datetime.datetime.now())
         ArticleVote.objects.bulk_create(iter(article_votes_iterator()))
+        print()
+
+        print(datetime.datetime.now())

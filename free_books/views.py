@@ -30,7 +30,14 @@ def article_index(request):
         'articles': articles,
         'show_new': has_perm(request.user, 'article_new'),
         'title': _('Articles'),
-        'verbose_names': get_verboses(Article, ['title', 'creator', 'date_published', 'last_edited'])
+        'verbose_names': [
+            get_verbose(Article, 'title'),
+            get_verbose(Article, 'creator'),
+            _('Net votes'),
+            get_verbose(Article, 'date_published'),
+            get_verbose(Article, 'last_edited'),
+        ],
+
     })
 
 def article_detail(request, article_id):
@@ -148,7 +155,8 @@ def user_index(request):
             _('Linear Reputation'),
             _('Real Name'),
             get_verbose(User, 'date_joined'),
-            get_verbose(Profile, 'last_edited')],
+            get_verbose(Profile, 'last_edited'),
+        ],
     })
 
 def user_detail(request, user_id):
