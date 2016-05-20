@@ -15,7 +15,11 @@
         <tr>
             <td><a href="{% url 'article_detail' article.id %}">{{ article.title }}</a></td>
             <td>{% user_link article.creator %}</td>
-            <td>{{ article.net_votes }}</td>
+            <td>
+                <a href="{% url 'article_vote_index' %}?{% url_set_params article=article.id %}">
+                    {{ article.net_votes }}
+                </a>
+            </td>
             <td>{{ article.date_published }}</td>
             <td>{{ article.last_edited }}</td>
         </tr>
