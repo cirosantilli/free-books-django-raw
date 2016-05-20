@@ -1,11 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if show_new %}
-<div class="actions">
-    {% include 'articles/new_link.html' %}
-</div>
-{% endif %}
 {% if articles %}
     <table>
         {% for verbose_name in verbose_names %}

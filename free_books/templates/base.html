@@ -22,6 +22,9 @@
             {% if show_admin %}
                 | <a href="{% url 'admin:index' %}">{% trans "Admin" %}</a>
             {% endif %}
+            {% if show_new_article %}
+                | <a href="{% url 'article_new' %}">{% trans "New article" %}</a>
+            {% endif %}
             </div>
             <div class="sections">
                 <span><strong><a href="{% url 'home' %}">{{ website_name }}</a></strong><span> |

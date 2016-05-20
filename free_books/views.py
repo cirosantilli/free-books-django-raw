@@ -28,7 +28,6 @@ def article_index(request):
     articles = get_page(request, articles, 25)
     return render(request, 'articles/index.html', {
         'articles': articles,
-        'show_new': has_perm(request.user, 'article_new'),
         'title': _('Articles'),
         'verbose_names': [
             get_verbose(Article, 'title'),
@@ -54,7 +53,7 @@ def article_detail(request, article_id):
         'title': article.title,
     }
     if (user.is_authenticated()):
-        context.extend({
+        context.update({
             'has_downvoted': user.profile.has_downvoted(article),
             'has_upvoted': user.profile.has_upvoted(article),
         })
