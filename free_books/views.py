@@ -165,13 +165,14 @@ def user_index(request):
     })
 
 def user_detail(request, user_id):
-    user = get_object_or_404(User, pk=user_id)
+    anuser = get_object_or_404(User, pk=user_id)
     return render(request, 'users/detail.html', {
         'ArticleVote': ArticleVote,
-        'anuser': user,
-        'about': render_markup_safe(user.profile.about),
-        'show_edit': has_perm(request.user, 'user_edit', user),
-        'title': _('User') + ' ' + user.username,
+        'anuser': anuser,
+        'article_count': Article.objects.filter(creator=anuser).count(),
+        'about': render_markup_safe(anuser.profile.about),
+        'show_edit': has_perm(request.user, 'user_edit', anuser),
+        'title': _('User') + ' ' + anuser.username,
     })
 
 @login_required

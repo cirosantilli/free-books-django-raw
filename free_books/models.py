@@ -46,9 +46,6 @@ class Profile(models.Model):
                 value=ArticleVote.DOWNVOTE).exists()
     @property
     def article_votes_cast_count(self):
-        print('here')
-        print(ArticleVote.objects.filter(creator=self.user,
-            type=ArticleVote.LIKE).count())
         return ArticleVote.objects.filter(creator=self.user,
                 type=ArticleVote.LIKE).count()
     @property
