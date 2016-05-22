@@ -8,15 +8,16 @@
 </div>
 {% endif %}
 <div class="main">
+    <div><a href="{% url 'help' %}#linear-reputation">{% trans "Linear reputation" %}</a>:
+        {{ anuser.profile.linear_reputation }}</div>
     <div><a href="{% url 'article_index' %}?{%  url_set_params creator=anuser.username %}">{% trans "Articles" %}</a></div>
     <div>
-        <a href="{% url 'article_vote_index' %}?{%  url_set_params user=anuser.username %}">{% trans "Votes" %}</a> |
-        <a href="{% url 'article_vote_index' %}?{%  url_set_params user=anuser.username value=ArticleVote.UPVOTE %}">{% trans "Upvotes" %}</a> |
-        <a href="{% url 'article_vote_index' %}?{%  url_set_params user=anuser.username value=ArticleVote.DOWNVOTE %}">{% trans "Downvotes" %}</a>
+        {% trans "Votes cast" %}:
+        <a href="{% url 'article_vote_index' %}?{%  url_set_params creator=anuser.username %}">{% trans "All" %}</a> |
+        <a href="{% url 'article_vote_index' %}?{%  url_set_params creator=anuser.username value=ArticleVote.UPVOTE %}">{% trans "Upvotes" %}</a> |
+        <a href="{% url 'article_vote_index' %}?{%  url_set_params creator=anuser.username value=ArticleVote.DOWNVOTE %}">{% trans "Downvotes" %}</a>
     </div>
     <div class="metadata">
-        <div><a href="{% url 'help' %}#linear-reputation">{% trans "Linear reputation" %}</a>:
-            {{ anuser.profile.linear_reputation }}</div>
         <div>{% trans "Real name" %}: {{ user.profile.real_name }}</div>
         <div>{% trans "Date joined" %}: {{ anuser.date_joined }}</div>
         <div>{% trans "Profile last edited" %}: {{ anuser.profile.last_edited }}</div>

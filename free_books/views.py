@@ -127,11 +127,11 @@ def article_vote(request, article_id):
         user = request.user
         votes = ArticleVote.objects.filter(
                 article=article,
-                type=request.POST.get('type'),
-                user=user)
+                creator=user,
+                type=request.POST.get('type'))
         post = request.POST.copy()
-        post['user'] = user.id
         post['article'] = article.id
+        post['creator'] = user.id
         if (votes):
             vote = votes[0]
             old_value = vote.value
@@ -209,18 +209,13 @@ def article_vote_index(request):
     votes = ArticleVote.objects.order_by('-date_created')
     votes = filter_by_get(votes, request, (
         ('article__id', 'article'),
+        ('creator__username', 'creator'),
         ('value', 'value'),
-        ('user__username', 'user')
     ))
     votes = get_page(request, votes, 25)
     return render(request, 'article_votes/index.html', {
         'votes': votes,
         'title': _('Votes'),
-        'verbose_names': [get_verbose(cls, name) for cls, name in (
-            (User, 'username'),
-            (Article, 'title'),
-            # (ArticleVote, 'type'),
-            (ArticleVote, 'value'),
-            (ArticleVote, 'date_created')
-        )]
+        'verbose_names': get_verboses(ArticleVote,
+            ('creator', 'article', 'value', 'date_created'))
     })

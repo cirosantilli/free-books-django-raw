@@ -32,8 +32,8 @@ class Profile(models.Model):
         """
         return ArticleVote.objects.filter(
                 article=article,
+                creator=self.user,
                 type=ArticleVote.LIKE,
-                user=self.user,
                 value=ArticleVote.UPVOTE).exists()
     def has_downvoted(self, article):
         """
@@ -41,8 +41,8 @@ class Profile(models.Model):
         """
         return ArticleVote.objects.filter(
                 article=article,
+                creator=self.user,
                 type=ArticleVote.LIKE,
-                user=self.user,
                 value=ArticleVote.DOWNVOTE).exists()
     @property
     def article_upvotes_received_count(self):
@@ -54,9 +54,11 @@ class Profile(models.Model):
                 type=ArticleVote.LIKE, value=ArticleVote.DOWNVOTE).count()
     @property
     def linear_reputation(self):
-        return self.article_upvotes_received_count - self.article_downvotes_received_count
-        # return ArticleVote.objects.filter(article__creator=self.user,
-                # type=ArticleVote.LIKE, value=ArticleVote.DOWNVOTE).aggregate(Sum(''))
+        # return self.article_upvotes_received_count - self.article_downvotes_received_count
+        return ArticleVote.objects.filter(
+                              article__creator=self.user,
+                              type=ArticleVote.LIKE) \
+                          .aggregate(Sum('value'))['value__sum']
     # This could be used to cache reputation queries.
     # linear_reputation = models.BigIntegerField(default=0)
 
@@ -116,13 +118,13 @@ class ArticleVote(models.Model):
         (DOWNVOTE, 'Downvote'),
     )
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True, blank=True)
     # We might add more types later on, like flagging illegal content.
     type = models.IntegerField(choices=TYPE_CHOICES, default=UPVOTE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     value = models.IntegerField(choices=VALUE_CHOICES, default=UPVOTE)
     class Meta:
-        unique_together = ('article', 'type', 'user')
+        unique_together = ('article', 'creator', 'type')
 
 # Something along those lines would be needed if we were to cache the linear reputation on a column.
 # Considerations:
@@ -144,4 +146,4 @@ class ArticleVote(models.Model):
 class ArticleVoteForm(MyModelForm):
     class Meta:
         model = ArticleVote
-        fields = ['article', 'type', 'user', 'value']
+        fields = ['article', 'creator', 'type', 'value']
