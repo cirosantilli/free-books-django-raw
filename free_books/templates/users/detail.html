@@ -13,9 +13,12 @@
     <div><a href="{% url 'article_index' %}?{%  url_set_params creator=anuser.username %}">{% trans "Articles" %}</a></div>
     <div>
         {% trans "Votes cast" %}:
-        <a href="{% url 'article_vote_index' %}?{%  url_set_params creator=anuser.username %}">{% trans "All" %}</a> |
-        <a href="{% url 'article_vote_index' %}?{%  url_set_params creator=anuser.username value=ArticleVote.UPVOTE %}">{% trans "Upvotes" %}</a> |
+        <a href="{% url 'article_vote_index' %}?{%  url_set_params creator=anuser.username %}">{% trans "All" %}</a>
+            ({{ anuser.profile.article_votes_cast_count }}) |
+        <a href="{% url 'article_vote_index' %}?{%  url_set_params creator=anuser.username value=ArticleVote.UPVOTE %}">{% trans "Upvotes" %}</a>
+            ({{ anuser.profile.article_upvotes_cast_count }}) |
         <a href="{% url 'article_vote_index' %}?{%  url_set_params creator=anuser.username value=ArticleVote.DOWNVOTE %}">{% trans "Downvotes" %}</a>
+            ({{ anuser.profile.article_downvotes_cast_count }})
     </div>
     <div class="metadata">
         <div>{% trans "Real name" %}: {{ user.profile.real_name }}</div>
