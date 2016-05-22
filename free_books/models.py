@@ -3,6 +3,7 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Count, Sum
 from django.db.models.signals import post_save
 from django.forms import ModelForm
 
@@ -54,6 +55,8 @@ class Profile(models.Model):
     @property
     def linear_reputation(self):
         return self.article_upvotes_received_count - self.article_downvotes_received_count
+        # return ArticleVote.objects.filter(article__creator=self.user,
+                # type=ArticleVote.LIKE, value=ArticleVote.DOWNVOTE).aggregate(Sum(''))
     # This could be used to cache reputation queries.
     # linear_reputation = models.BigIntegerField(default=0)
 
@@ -79,7 +82,6 @@ class Article(models.Model):
     last_edited = models.DateTimeField(auto_now_add=True, blank=True)
     date_published = models.DateTimeField(auto_now_add=True, blank=True)
     title = models.CharField(max_length=256)
-    votes = models.ManyToManyField(User, through='ArticleVote', related_name='article_votes')
     def __str__(self):
         return self.title
     def get_absolute_url(self):
@@ -90,8 +92,11 @@ class Article(models.Model):
         return ArticleVote.objects.filter(article=self, type=ArticleVote.LIKE, value=ArticleVote.DOWNVOTE).count()
     def net_votes(self):
         return self.upvote_count() - self.downvote_count()
-    # TODO enforce non-empty title and body here, currently only done for GUI.
-    # Then write test for it.
+    @classmethod
+    def get_articles_with_most_net_votes(cls):
+        return cls.objects.filter(articlevote__type=ArticleVote.LIKE) \
+                          .annotate(net_votes=Sum('articlevote__value')) \
+                          .order_by('-net_votes')
 
 class ArticleForm(MyModelForm):
     class Meta:
@@ -103,8 +108,9 @@ class ArticleVote(models.Model):
     TYPE_CHOICES = (
         (LIKE, 'Like'),
     )
-    UPVOTE = 0
-    DOWNVOTE = 1
+    # Use 1 and -1 so that we can do a SUM() to get the net value.
+    UPVOTE = 1
+    DOWNVOTE = -1
     VALUE_CHOICES = (
         (UPVOTE, 'Upvote'),
         (DOWNVOTE, 'Downvote'),

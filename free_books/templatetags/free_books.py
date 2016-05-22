@@ -12,6 +12,9 @@ def user_link(context, user=None):
 
 @register.simple_tag(takes_context=True)
 def url_set_params(context, **kwargs):
+    """
+    Add GET parameters to existing ones.
+    """
     d = context['request'].GET.copy()
     for k in kwargs:
         d[k] = kwargs[k]

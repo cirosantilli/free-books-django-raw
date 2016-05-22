@@ -23,7 +23,13 @@ def about(request):
     return render(request, 'about.html', {'title': _('About')})
 
 def article_index(request):
-    articles = Article.objects.order_by('-date_published')
+    sort = request.GET.get('sort')
+    if sort == 'last-edited':
+        articles = Article.objects.order_by('-last_edited')
+    elif sort == 'net-votes':
+        articles = Article.get_articles_with_most_net_votes()
+    else:
+        articles = Article.objects.order_by('-date_published')
     articles = filter_by_get(articles, request, (('creator__username', 'creator'),))
     articles = get_page(request, articles, 25)
     return render(request, 'articles/index.html', {

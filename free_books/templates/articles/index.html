@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="search">
+    Sort:
+    <a href="?sort=date-published">{% trans "Date published" %}</a> |
+    <a href="?sort=last-edited">{% trans "Last edited" %}</a> |
+    <a href="?sort=net-votes">{% trans "Net votes" %}</a>
+</div>
 {% if articles %}
     <table>
         {% for verbose_name in verbose_names %}

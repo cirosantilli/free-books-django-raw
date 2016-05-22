@@ -62,14 +62,11 @@ def article_votes_iterator():
     for user_pk in range(1, nusers + 1):
         nvotes = 0
         article_pk = 1
-        print()
-        print(user_pk)
         while nvotes < votes_per_user:
             if (user_pk % 5) == 0:
                 value = ArticleVote.DOWNVOTE
             else:
                 value = ArticleVote.UPVOTE
-            print(article_pk)
             yield ArticleVote(
                 article=Article.objects.get(pk=article_pk),
                 type=ArticleVote.LIKE,
