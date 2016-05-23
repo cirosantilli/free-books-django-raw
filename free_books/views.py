@@ -151,14 +151,16 @@ def article_vote(request, article_id):
     return HttpResponseNotFound()
 
 def user_index(request):
-    users = get_page(request, User.objects.order_by('-date_joined'), 25)
+    # Date joined sort. Not very useful.
+    # users = get_page(request, User.objects.order_by('-date_joined'), 25)
+    users = get_page(request, Profile.get_users_with_most_linear_reputation(), 25)
     return render(request, 'users/index.html', {
         'users': users,
         'title': _('Users'),
         'verbose_names': [
             get_verbose(User, 'username'),
-            _('Linear Reputation'),
-            _('Real Name'),
+            _('Linear reputation'),
+            _('Real name'),
             get_verbose(User, 'date_joined'),
             get_verbose(Profile, 'last_edited'),
         ],

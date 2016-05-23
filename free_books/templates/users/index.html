@@ -11,7 +11,7 @@
     {% for user in users %}
         <tr>
             <td>{% user_link user %}</td>
-            <td>{{ user.profile.linear_reputation }}</td>
+            <td>{{ user.linear_reputation }}</td>
             <td>{{ user.profile.real_name }}</td>
             <td>{{ user.date_joined }}</td>
             <td>{{ user.profile.last_edited }}</td>

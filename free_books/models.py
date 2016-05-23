@@ -19,6 +19,8 @@ class Profile(models.Model):
     last_edited = models.DateTimeField(auto_now_add=True, blank=True, verbose_name='profile last edited')
     # This is just a cache, but definitely required as it is an expensive value to calculate.
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # This could be used to cache reputation queries.
+    # linear_reputation = models.BigIntegerField(default=0)
     def __str__(self):
         return self.user.username
     def get_absolute_url(self):
@@ -70,13 +72,19 @@ class Profile(models.Model):
                 type=ArticleVote.LIKE, value=ArticleVote.DOWNVOTE).count()
     @property
     def linear_reputation(self):
+        # Same, .but less efficient? Depends if the others are cached.
         # return self.article_upvotes_received_count - self.article_downvotes_received_count
         return ArticleVote.objects.filter(
                               article__creator=self.user,
                               type=ArticleVote.LIKE) \
                           .aggregate(Sum('value'))['value__sum']
-    # This could be used to cache reputation queries.
-    # linear_reputation = models.BigIntegerField(default=0)
+    @classmethod
+    def get_users_with_most_linear_reputation(cls):
+        q = User.objects.filter(article__articlevote__type=ArticleVote.LIKE) \
+                        .annotate(linear_reputation=Sum('article__articlevote__value')) \
+                        .order_by('-linear_reputation')
+        print(q.query)
+        return q
 
 class UserForm(MyModelForm):
     class Meta:
@@ -96,7 +104,7 @@ post_save.connect(createProfile, sender=User)
 
 class Article(models.Model):
     body = models.TextField(max_length=1048576)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='article_creator')
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
     last_edited = models.DateTimeField(auto_now_add=True, blank=True)
     date_published = models.DateTimeField(auto_now_add=True, blank=True)
     title = models.CharField(max_length=256)
