@@ -211,12 +211,18 @@ def article_vote_index(request):
     votes = filter_by_get(votes, request, (
         ('article__id', 'article'),
         ('creator__username', 'creator'),
+        ('article__creator__username', 'article_creator'),
         ('value', 'value'),
     ))
     votes = get_page(request, votes, 25)
     return render(request, 'article_votes/index.html', {
         'votes': votes,
         'title': _('Votes'),
-        'verbose_names': get_verboses(ArticleVote,
-            ('creator', 'article', 'value', 'date_created'))
+        'verbose_names': [
+            _('Voter'),
+            get_verbose(ArticleVote, 'value'),
+            _('Vote date'),
+            _('Article creator'),
+            _('Article title'),
+        ],
     })

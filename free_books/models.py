@@ -57,6 +57,10 @@ class Profile(models.Model):
         return ArticleVote.objects.filter(creator=self.user,
                 type=ArticleVote.LIKE, value=ArticleVote.DOWNVOTE).count()
     @property
+    def article_votes_received_count(self):
+        return ArticleVote.objects.filter(article__creator=self.user,
+                                          type=ArticleVote.LIKE).count()
+    @property
     def article_upvotes_received_count(self):
         return ArticleVote.objects.filter(article__creator=self.user,
                 type=ArticleVote.LIKE, value=ArticleVote.UPVOTE).count()

@@ -13,6 +13,15 @@
     <div><a href="{% url 'article_index' %}?{%  url_set_params creator=anuser.username %}">
             {% trans "Articles" %}</a> ({{ article_count }})</div>
     <div>
+        {% trans "Votes received" %}:
+        <a href="{% url 'article_vote_index' %}?{%  url_set_params article_creator=anuser.username %}">{% trans "All" %}</a>
+            ({{ anuser.profile.article_votes_received_count }}) |
+        <a href="{% url 'article_vote_index' %}?{%  url_set_params article_creator=anuser.username value=ArticleVote.UPVOTE %}">{% trans "Upvotes" %}</a>
+            ({{ anuser.profile.article_upvotes_received_count }}) |
+        <a href="{% url 'article_vote_index' %}?{%  url_set_params article_creator=anuser.username value=ArticleVote.DOWNVOTE %}">{% trans "Downvotes" %}</a>
+            ({{ anuser.profile.article_downvotes_received_count }})
+    </div>
+    <div>
         {% trans "Votes cast" %}:
         <a href="{% url 'article_vote_index' %}?{%  url_set_params creator=anuser.username %}">{% trans "All" %}</a>
             ({{ anuser.profile.article_votes_cast_count }}) |
