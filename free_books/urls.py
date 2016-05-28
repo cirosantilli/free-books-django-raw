@@ -1,3 +1,10 @@
+"""
+Style guide:
+
+-   all AJAX parameters are POSTed, none are part of the URL.
+    More uniform, and en users never see that anyways.
+"""
+
 from django.conf.urls import url, include
 from django.contrib import admin
 
@@ -11,17 +18,6 @@ urlpatterns = [
     url(r'^help/$', views.help, name='help'),
 ]
 
-prefix = r'a'
-id = r'(?P<article_id>[0-9]+)'
-urlpatterns.extend([
-    url(r'^' + prefix + '/$', views.article_index, name='article_index'),
-    url(r'^' + prefix + '/new$', views.article_new, name='article_new'),
-    url(r'^' + prefix + '/' + id + '/$', views.article_detail, name='article_detail'),
-    url(r'^' + prefix + '/' + id + '/edit$', views.article_edit, name='article_edit'),
-    url(r'^' + prefix + '/' + id + '/delete$', views.article_delete, name='article_delete'),
-    url(r'^' + prefix + '/' + id + '/vote$', views.article_vote, name='article_vote'),
-])
-
 prefix = r'u'
 id = r'(?P<user_id>[0-9]+)'
 urlpatterns.extend([
@@ -34,9 +30,20 @@ urlpatterns.extend([
     # url(r'^' + prefix + '/' + id + '/delete$', views.user_delete, name='user_delete'),
 ])
 
+prefix = r'a'
+id = r'(?P<article_id>[0-9]+)'
+urlpatterns.extend([
+    url(r'^' + prefix + '/$', views.article_index, name='article_index'),
+    url(r'^' + prefix + '/new$', views.article_new, name='article_new'),
+    url(r'^' + prefix + '/' + id + '/$', views.article_detail, name='article_detail'),
+    url(r'^' + prefix + '/' + id + '/edit$', views.article_edit, name='article_edit'),
+    url(r'^' + prefix + '/' + id + '/delete$', views.article_delete, name='article_delete'),
+])
+
 prefix = r'article-votes'
 urlpatterns.extend([
     url(r'^' + prefix + '/$', views.article_vote_index, name='article_vote_index'),
+    url(r'^' + prefix + '/new$', views.article_vote_new, name='article_vote'),
 ])
 
 prefix = r'tag-votes'

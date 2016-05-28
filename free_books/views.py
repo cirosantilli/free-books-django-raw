@@ -23,6 +23,64 @@ def help(request):
 def about(request):
     return render(request, 'about.html', {'title': _('About')})
 
+def user_index(request):
+    # Date joined sort. Not very useful.
+    # users = get_page(request, User.objects.order_by('-date_joined'), 25)
+    users = get_page(request, Profile.get_users_with_most_linear_reputation(), 25)
+    return render(request, 'users/index.html', {
+        'users': users,
+        'title': _('Users'),
+        'verbose_names': [
+            get_verbose(User, 'username'),
+            _('Linear reputation'),
+            _('Real name'),
+            get_verbose(User, 'date_joined'),
+            get_verbose(Profile, 'last_edited'),
+        ],
+    })
+
+def user_detail(request, user_id):
+    anuser = get_object_or_404(User, pk=user_id)
+    return render(request, 'users/detail.html', {
+        'ArticleVote': ArticleVote,
+        'anuser': anuser,
+        'article_count': Article.objects.filter(creator=anuser).count(),
+        'about': render_markup_safe(anuser.profile.about),
+        'show_edit': has_perm(request.user, 'user_edit', anuser),
+        'title': _('User') + ' ' + anuser.username,
+    })
+
+@login_required
+def user_edit(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    if not has_perm(request.user, 'user_edit', user):
+        return HttpResponseNotFound()
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=user, prefix='user')
+        profile_form = ProfileForm(request.POST, instance=user.profile, prefix='profile')
+        if user_form.is_valid() and profile_form.is_valid():
+            user = user_form.save()
+            profile = profile_form.save(commit=False)
+            profile.last_edited = timezone.now()
+            profile.save()
+            return redirect(user.profile)
+        # TODO else? Or does it throw?
+    else:
+        user_form = UserForm(instance=user, prefix='user')
+        profile_form = ProfileForm(instance=user.profile, prefix='profile')
+    return render(request, 'users/new.html', {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'form_action': reverse('user_edit', args=[user.id]),
+        'submit_value': _('Save changes'),
+        'title': _('User') + ' ' + user.username,
+    })
+
+@login_required
+def user_settings(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    return render(request, 'users/settings.html', {'title': _('Account settings')})
+
 def article_index(request):
     sort = request.GET.get('sort')
     if sort == 'last-edited':
@@ -148,99 +206,6 @@ def article_delete(request, article_id):
         return redirect('article_index')
     return HttpResponseNotFound()
 
-def article_vote(request, article_id):
-    """
-    - (type, value) does not exist     -> create vote
-    - (type, value) exists             -> delete vote
-    - type exists with different value -> change vote value
-    """
-    article = get_object_or_404(Article, pk=article_id)
-    if (has_perm(request.user, 'article_vote', article)
-            and request.method == 'POST'):
-        user = request.user
-        votes = ArticleVote.objects.filter(
-                article=article,
-                creator=user,
-                type=request.POST.get('type'))
-        post = request.POST.copy()
-        post['article'] = article.id
-        post['creator'] = user.id
-        if (votes):
-            vote = votes[0]
-            old_value = vote.value
-        else:
-            vote = None
-            old_value = None
-        form = ArticleVoteForm(post, instance=vote)
-        if form.is_valid():
-            vote = form.save(commit=False)
-            if old_value == vote.value:
-                vote.delete()
-                return HttpResponse()
-            else:
-                vote.date_created = timezone.now()
-                vote.save()
-            return HttpResponse()
-    return HttpResponseNotFound()
-
-def user_index(request):
-    # Date joined sort. Not very useful.
-    # users = get_page(request, User.objects.order_by('-date_joined'), 25)
-    users = get_page(request, Profile.get_users_with_most_linear_reputation(), 25)
-    return render(request, 'users/index.html', {
-        'users': users,
-        'title': _('Users'),
-        'verbose_names': [
-            get_verbose(User, 'username'),
-            _('Linear reputation'),
-            _('Real name'),
-            get_verbose(User, 'date_joined'),
-            get_verbose(Profile, 'last_edited'),
-        ],
-    })
-
-def user_detail(request, user_id):
-    anuser = get_object_or_404(User, pk=user_id)
-    return render(request, 'users/detail.html', {
-        'ArticleVote': ArticleVote,
-        'anuser': anuser,
-        'article_count': Article.objects.filter(creator=anuser).count(),
-        'about': render_markup_safe(anuser.profile.about),
-        'show_edit': has_perm(request.user, 'user_edit', anuser),
-        'title': _('User') + ' ' + anuser.username,
-    })
-
-@login_required
-def user_edit(request, user_id):
-    user = get_object_or_404(User, pk=user_id)
-    if not has_perm(request.user, 'user_edit', user):
-        return HttpResponseNotFound()
-    if request.method == 'POST':
-        user_form = UserForm(request.POST, instance=user, prefix='user')
-        profile_form = ProfileForm(request.POST, instance=user.profile, prefix='profile')
-        if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save()
-            profile = profile_form.save(commit=False)
-            profile.last_edited = timezone.now()
-            profile.save()
-            return redirect(user.profile)
-        # TODO else? Or does it throw?
-    else:
-        user_form = UserForm(instance=user, prefix='user')
-        profile_form = ProfileForm(instance=user.profile, prefix='profile')
-    return render(request, 'users/new.html', {
-        'user_form': user_form,
-        'profile_form': profile_form,
-        'form_action': reverse('user_edit', args=[user.id]),
-        'submit_value': _('Save changes'),
-        'title': _('User') + ' ' + user.username,
-    })
-
-@login_required
-def user_settings(request, user_id):
-    user = get_object_or_404(User, pk=user_id)
-    return render(request, 'users/settings.html', {'title': _('Account settings')})
-
 def article_vote_index(request):
     votes = ArticleVote.objects.order_by('-date_created')
     votes = filter_by_get(votes, request, (
@@ -261,6 +226,50 @@ def article_vote_index(request):
             _('Article title'),
         ],
     })
+
+def article_vote_new(request):
+    """
+    - (type, value) does not exist     -> create vote
+    - (type, value) exists             -> delete vote
+    - type exists with different value -> change vote value
+    """
+    if request.method == 'POST':
+        try:
+            article_id = int(request.POST.get('article'))
+        except ValueError:
+            pass
+        else:
+            try:
+                article = Article.objects.get(pk=article_id)
+            except Article.DoesNotExist:
+                pass
+            else:
+                if (has_perm(request.user, 'article_vote', article)):
+                    user = request.user
+                    votes = ArticleVote.objects.filter(
+                            article=article,
+                            creator=user,
+                            type=request.POST.get('type'))
+                    post = request.POST.copy()
+                    post['article'] = article.id
+                    post['creator'] = user.id
+                    if (votes):
+                        vote = votes[0]
+                        old_value = vote.value
+                    else:
+                        vote = None
+                        old_value = None
+                    form = ArticleVoteForm(post, instance=vote)
+                    if form.is_valid():
+                        vote = form.save(commit=False)
+                        if old_value == vote.value:
+                            vote.delete()
+                            return HttpResponse()
+                        else:
+                            vote.date_created = timezone.now()
+                            vote.save()
+                        return HttpResponse()
+    return HttpResponseNotFound()
 
 def article_tag_vote_index(request):
     votes = ArticleTagVote.objects.order_by('-date_created')
