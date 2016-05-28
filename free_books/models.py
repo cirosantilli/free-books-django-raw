@@ -171,3 +171,20 @@ class ArticleVoteForm(MyModelForm):
     class Meta:
         model = ArticleVote
         fields = ['article', 'creator', 'type', 'value']
+
+class ArticleTagVote(models.Model):
+    UPVOTE = 1
+    DOWNVOTE = -1
+    VALUE_CHOICES = (
+        (UPVOTE, 'Upvote'),
+        (DOWNVOTE, 'Downvote'),
+    )
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True, blank=True)
+    defined_by_article = models.BooleanField(default=True)
+    # TODO name restrictions. [0-9a-z-].
+    name = models.CharField(max_length=256)
+    value = models.IntegerField(choices=VALUE_CHOICES, default=UPVOTE)
+    class Meta:
+        unique_together = ('article', 'creator', 'defined_by_article', 'name')

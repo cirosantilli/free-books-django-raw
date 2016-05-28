@@ -1,10 +1,12 @@
 from markdown2 import markdown
 
-from django.utils.text import capfirst
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db import models
 from django.http import HttpResponse
 from django.utils.html import mark_safe
+from django.utils.text import capfirst
 from django.utils.translation import ugettext as _
+from django.core.exceptions import FieldDoesNotExist
 
 def filter_by_get(objs, request, fields):
     """

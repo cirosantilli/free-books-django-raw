@@ -58,7 +58,10 @@
         <div>{% trans "Creator" %}: {% user_link article.creator %}</div>
         <div>{% trans "Publish date" %}: {{ article.date_published }}</div>
         <div>{% trans "Last edited" %}: {{ article.last_edited }}</div>
-        <div>{% trans "Body" %}:</div>
+    </div>
+    <div class="tags">
+        {% include "articles/tags.html" with tags=defined_tags type="defined" label="Defined tags" defined01="1" %}
+        {% include "articles/tags.html" with tags=non_defined_tags type="non-defined" label="Non-defined tags" defined01="0" %}
     </div>
     <div class="body">
         {{ body }}

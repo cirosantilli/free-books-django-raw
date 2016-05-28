@@ -23,6 +23,11 @@ form label {
     display:block;
     margin-bottom: 5px;
 }
+main .defined-tags {
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+    margin-bottom: 5px;
+}
 nav .login {
     border-bottom: 1px solid black;
     padding-bottom: 2px;
@@ -47,6 +52,16 @@ main .metadata {
     border-bottom: 1px solid black;
     padding-bottom: 2px;
     margin-bottom: 5px;
+}
+main .tags {
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+    margin-bottom: 5px;
+}
+main ul.tags-by-user {
+    margin-bottom: 0px;
+    margin-top: 0px;
+    list-style-type: none;
 }
 footer {
     border-bottom: 1px solid black;

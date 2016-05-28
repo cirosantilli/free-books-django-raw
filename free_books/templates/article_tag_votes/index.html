@@ -9,16 +9,18 @@
     {% for vote in votes %}
         <tr>
             <td>{% user_link vote.creator %}</td>
+            <td>{{ vote.name }}</td>
             <td>{{ vote.get_value_display }}</td>
+            <td>{{ vote.defined_by_article }}</td>
             <td>{{ vote.date_created }}</td>
             <td>{% user_link vote.article.creator %}</td>
             <td><a href="{% url 'article_detail' vote.article.id %}">{{ vote.article.title }}</a></td>
-            {#<td>{{ vote.get_type_display }}</td>#}
+            {#<td>{{ tag.get_type_display }}</td>#}
         </tr>
     {% endfor %}
     </table>
     {% include "pagination.html" with objects=votes %}
 {% else %}
-    <div>{% trans "There are no votes that you can see" %}</div>
+    <div>{% trans "There are no tags that you can see" %}</div>
 {% endif %}
 {% endblock %}

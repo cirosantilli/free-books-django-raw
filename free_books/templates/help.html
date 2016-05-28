@@ -2,18 +2,119 @@
 
 {% block content %}
 <h2 id="linear-reputation">Linear reputation</h2>
-<p>The simplest possible reputation: it just adds up all upvotes on all your articles by any user.</p>
-<p>Advantage: since this reputation is easy to calculate, it gets updated immediately when you get an upvote.</p>
-<p>Disadvantages:</p>
-<ul>
-    <li>The downside of this reputation is that it is easy to game it with bots, so it is not very meaningful.</li>
-    <li>
-        Furthermore, this reputation does not take into account who upvoted you.
-        E.g., an upvote from Einstein will have the same weight as that of a mere mortal.
-    </li>
-    <li>
-        Time is not taken into accoutn. Old upvotes are as important as new upvotes.
-        This matters more in domains that change rapidly like certain technologies.
-    </li>
-</ul>
+    <p>The simplest possible reputation: it just adds up all upvotes on all your articles by any user.</p>
+    <p>Advantage: since this reputation is easy to calculate, it gets updated immediately when you get an upvote.</p>
+    <p>Disadvantages:</p>
+    <ul>
+        <li>The downside of this reputation is that it is easy to game it with bots, so it is not very meaningful.</li>
+        <li>
+            Furthermore, this reputation does not take into account who upvoted you.
+            E.g., an upvote from Einstein will have the same weight as that of a mere mortal.
+        </li>
+        <li>
+            Time is not taken into account. Old upvotes are as important as new upvotes.
+            This matters more in domains that change rapidly like certain technologies.
+        </li>
+    </ul>
+
+<h2 id="defined-tags">Defined tags</h2>
+
+    <h3>Intuition</h3>
+
+        <p>The <em>defined tags of an article</em>, are tags for which the article is one possible definition of the tag.</p>
+        <p>For example:</p>
+        <ul>
+            <li>
+                An article entitled "Animals for nerd biologists" would merit a defined tag <code>animal</code>,
+                because it will define what is animals are for a particular target audience (nerd biolgists).
+            </li>
+            <li>
+                <p>
+                    An article entitled "Dog for pet owners" should <em>not</em>
+                    have <code>animal</code> as a "defined tag", as it does not define animals themselves,
+                    only a very small part of animals.
+                </p>
+                <p>
+                    This article should instead have <code>dog</code> as a defined tag.
+                </p>
+                <p>
+                    <code>animal</code> <em>could</em> however be a non-defiend tag of this article.
+                    However, it is better to define a <a href="#tag-depends-relation">tag depends relation</a> relation instead between
+                    <code>dog</code> and <code>animal</code> since there is a clear dependency between them.
+                    This way, <code>dog</code> may appear on you <code>animal</code> searches
+                    even for articles which the author has not tagged with <code>animal</code> when you want that to happen.
+                </p>
+            </li>
+        </ul>
+        <p></p>
+
+    <h3>Side effects on website</h3>
+
+        <p>
+            The major side effect of being a defined tag for an article,
+            is that when people do searches in the tag <code>animal </code>,
+            they have the option to search only for defined tags.
+        </p>
+        <p>
+            And this is most likely what they will want to do most of the time,
+            since <code>animal</code> includes too many sub-topics, so that restriction
+            would not improve search results very much.
+        </p>
+        <p>
+            When someone searches for the defined tag <code>animal</code>,
+            the user wants articles that offer a general view of the entirety of animals,
+            not articles about dogs.
+        </p>
+        <p>
+            If you wrongly assign defined tags, users who search on that tag will likely
+            downvote that defined tag relation for the article to prevent the article from showing on their searches.
+        </p>
+        <p>If you do this repeatedly, you risk having users block you for the tag.</p>
+
+<h2 id="defined-tags">Tag depends relation</h2>
+
+    <p>TODO not yet implemented.</p>
+
+    <h3>Intuition</h3>
+
+        <p>A <em>tag depends relation</em>, specifies that one tag depends on an other one.</p>
+        <p>
+            For example, the tag <code>animal</code> should depend on the tag <code>dog</code>,
+            because knowing everything there is to know about animals, implies knowing everything
+            there is to know about dogs in the first place.
+        </p>
+        <p>
+            Tag depends relations are not symmetric. For example, the tag <code>dog</code>
+            should not depend on the tag <code>animal</code>,
+            since you don't need to know all about dogs to know everything about animals.
+        </p>
+        <p>
+            There are however cases in which inclusion relations are not clear.
+            For example, one may argue that knowing about an actor A, requires knowing about
+            all the films F he has starred in, but also the other way around.
+        </p>
+        <p>
+            A way to organize an author / film relation is to create a <code>actors-of-film-f</code>
+            tag, which is a child of <code>f-2000-film</code>, and then make <code>f-2000-film</code>
+            depend on the for actor A <code>a-actor</code>.
+        </p>
+
+    <h3>Side effects on website</h3>
+
+        <p>If you specify that <code>animal</code> depends on <code>dog</code>:</p>
+        <ul>
+            <li>
+                the tag <code>animal</code> will not show on tag lists when the tag <code>dog</code> is also present:
+                you already know that there is an implication there, so it is just noise
+            </li>
+            <li>
+                you will be able to search for all <code>animal</code> child articles if you want,
+                so that <code>dog</code> and <code>cat</code> will also appear on the same search,
+                even if the author did not use the animal tag (he shouldn't).
+            </li>
+            <li>
+                the <code>dog</code> tag may appear as a child subject in <code>animal</code> articles for you
+            </li>,
+        </ul>
+
 {% endblock %}

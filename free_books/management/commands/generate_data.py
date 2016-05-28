@@ -1,9 +1,14 @@
+"""
+Generate a non-faked deterministic dataset. Good for initial debugging.
+"""
+
 import datetime
 
-from django.core.management.base import BaseCommand
-
-from free_books.models import Article, Profile, ArticleVote
 from django.contrib.auth.models import User
+from django.core.management.base import BaseCommand
+from django.db.utils import IntegrityError
+
+from free_books.models import Article, Profile, ArticleTagVote, ArticleVote
 
 """
 TODO Also reset the ID counter to 0.
@@ -26,6 +31,8 @@ http://stackoverflow.com/questions/2988997/how-do-i-truncate-table-using-django-
 nusers = 100
 narticles = nusers * 10
 votes_per_user = 9
+total_tag_names = 10
+max_tags_per_article = 50
 
 def users_iterator():
     for i in range(nusers):
@@ -46,7 +53,7 @@ def profiles_iterator():
         n = i + 1
         yield Profile(
             about='About ' + str(n),
-            user=User.objects.get(pk=n)
+            user_id=n
         )
 
 def articles_iterator():
@@ -55,7 +62,7 @@ def articles_iterator():
         yield Article(
             body='Body ' + str(n),
             title='Title ' + str(n),
-            creator=User.objects.get(pk=(1 + (i % nusers)))
+            creator_id=(1 + (i % nusers))
         )
 
 def article_votes_iterator():
@@ -63,40 +70,95 @@ def article_votes_iterator():
         nvotes = 0
         article_pk = 1
         while nvotes < votes_per_user:
-            if (user_pk % 5) == 0:
+            if (nvotes % 5) == 0:
                 value = ArticleVote.DOWNVOTE
             else:
                 value = ArticleVote.UPVOTE
             yield ArticleVote(
-                article=Article.objects.get(pk=article_pk),
+                article_id=article_pk,
+                creator_id=user_pk,
                 type=ArticleVote.LIKE,
                 value=value,
-                user=User.objects.get(pk=user_pk),
             )
             nvotes += 1
             article_pk = 1 + ((nvotes * user_pk) % narticles)
+
+def article_tag_votes_iterator():
+    for article_pk in range(1, narticles + 1):
+        ntags = 0
+        tags_per_article = int(max_tags_per_article * 2**(-ntags))
+        while ntags < tags_per_article:
+            if (ntags % 5) == 0:
+                value = ArticleTagVote.DOWNVOTE
+            else:
+                value = ArticleTagVote.UPVOTE
+            yield ArticleTagVote(
+                article_id=article_pk,
+                creator_id=((ntags % nusers) + 1),
+                defined_by_article=((ntags % 3) == 0),
+                name='tag' + str(ntags % total_tag_names),
+                value=value,
+            )
+            ntags += 1
+
+def article_tag_votes_creator_iterator():
+        """
+        have some tags by article creators.
+        """
+        ntags = 0
+        for article_pk in range(1, narticles + 1):
+            # TODO DRY up this check further.
+            article_pk_mod = article_pk % 5
+            if article_pk_mod != 0:
+                creator_pk = Article.objects.get(pk=article_pk).creator.pk
+                name = 'tag' + str(ntags % total_tag_names)
+                params = {
+                    'article_id':article_pk,
+                    'creator_id':creator_pk,
+                    'defined_by_article':(article_pk_mod != 4),
+                    'name':name,
+                }
+                if not (ArticleTagVote.objects.filter(**params)):
+                    params.update({'value':ArticleTagVote.UPVOTE})
+                    vote = ArticleTagVote(**params)
+                    yield vote
+                ntags += 1
 
 class Command(BaseCommand):
     def handle(self, **options):
 
         print('users')
-        print(datetime.datetime.now())
+        time = datetime.datetime.now()
         User.objects.bulk_create(iter(users_iterator()))
+        print(datetime.datetime.now() - time)
         print()
 
         print('profiles')
-        print(datetime.datetime.now())
+        time = datetime.datetime.now()
         Profile.objects.bulk_create(iter(profiles_iterator()))
+        print(datetime.datetime.now() - time)
         print()
 
         print('articles')
-        print(datetime.datetime.now())
+        time = datetime.datetime.now()
         Article.objects.bulk_create(iter(articles_iterator()))
+        print(datetime.datetime.now() - time)
         print()
 
         print('article votes')
-        print(datetime.datetime.now())
+        time = datetime.datetime.now()
         ArticleVote.objects.bulk_create(iter(article_votes_iterator()))
+        print(datetime.datetime.now() - time)
         print()
 
-        print(datetime.datetime.now())
+        print('article tag votes')
+        time = datetime.datetime.now()
+        ArticleTagVote.objects.bulk_create(iter(article_tag_votes_iterator()))
+        print(datetime.datetime.now() - time)
+        print()
+
+        print('article tag votes creator')
+        time = datetime.datetime.now()
+        ArticleTagVote.objects.bulk_create(iter(article_tag_votes_creator_iterator()))
+        print(datetime.datetime.now() - time)
+        print()

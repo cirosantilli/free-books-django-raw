@@ -1,0 +1,55 @@
+<div class="{{ type }}-tags">
+    <a href="{% url 'help' %}#defined-tags">{% trans label %}</a>
+    {% if user != article.creator %}
+        <div>
+            {% trans "Creator" %}:
+            <ul class="tags-by-user">
+                <li>
+                    {% trans "Up" %}:
+                    {% for tag in tags.creator_up %}
+                        {{ tag.name }}
+                    {% endfor %}
+                </li>
+                <li>
+                    {% trans "Down" %}:
+                    {% for tag in tags.creator_down %}
+                        {{ tag.name }}
+                    {% endfor %}
+                </li>
+            </ul>
+        </div>
+    {% endif %}
+    {% if user.is_authenticated %}
+        <div>
+            {% trans "Mine" %}:
+            <ul class="tags-by-user">
+                <li>
+                    {% trans "Up" %}:
+                    {% for tag in tags.my_up %}
+                        {{ tag.name }}
+                    {% endfor %}
+                    <a href="TODO" id="add-{{ type }}-tag-upvote">Add</a>
+                    <input type="text-area" id="add-{{ type }}-tag-upvote-textarea"></input>
+                </li>
+                <li>
+                    {% trans "Down" %}:
+                    {% for tag in my_tags_down %}
+                        {{ tag.name }}
+                    {% endfor %}
+                    <a href="TODO" id="add-{{ type }}-tag-downvote">Add</a>
+                    <input type="text-area" id="add-{{ type }}-tag-downvote-textarea"></input>
+                </li>
+            </ul>
+        </div>
+    {% endif %}
+    <div>
+        {% trans "All" %}
+        (<a href="{% url 'article_tag_vote_index' %}?{% url_set_params article=article.id defined=defined01 %}"
+            >{{ tags.all.count }}</a>):
+        {% for tag in tags.with_score %}
+            {{ tag.name }} (<a
+                href="{% url 'article_tag_vote_index' %}?{% url_set_params article=article.id defined=defined01 name=tag.name %}"
+                >{{ tag.linear_score }}</a>)
+        {% endfor %}
+    </div>
+</div>

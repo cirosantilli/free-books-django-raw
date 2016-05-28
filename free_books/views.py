@@ -3,13 +3,14 @@ import datetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.db.models import Count, Sum
 from django.http import Http404, HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
 
-from .models import Article, ArticleForm, ArticleVote, ArticleVoteForm, UserForm, Profile, ProfileForm
+from .models import Article, ArticleForm, ArticleVote, ArticleVoteForm, ArticleTagVote, UserForm, Profile, ProfileForm
 from .permissions import has_perm
 from .util import filter_by_get, get_page, get_verbose, get_verboses, Http401, render_markup_safe, website_name
 
@@ -45,9 +46,38 @@ def article_index(request):
 
     })
 
+def get_tags_defined(article, tags, user, defined):
+    tags = tags.filter(defined_by_article=True)
+    creator_tags = tags.filter(creator=article.creator)
+    creator_tags_up = creator_tags.filter(value=ArticleTagVote.UPVOTE).order_by('name')
+    creator_tags_down = creator_tags.filter(value=ArticleTagVote.DOWNVOTE).order_by('name')
+    tags_with_score = tags \
+            .values('name') \
+            .annotate(linear_score=Sum('value')) \
+            .order_by('-linear_score', 'name')
+    ret = {
+        'all': tags,
+        'creator_up': creator_tags_up,
+        'creator_down': creator_tags_down,
+        'with_score': tags_with_score
+    }
+    if (user.is_authenticated()):
+        my_tags = tags.filter(creator=user)
+        ret.update({
+            'my_up': my_tags.filter(value=ArticleTagVote.UPVOTE),
+            'my_down': my_tags.filter(value=ArticleTagVote.DOWNVOTE),
+        })
+    return ret
+
 def article_detail(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
     user = request.user
+
+    # TODO paging + AJAX load more.
+    tags = ArticleTagVote.objects.filter(article=article)
+    defined_tags= get_tags_defined(article, tags, user, True)
+    non_defined_tags = get_tags_defined(article, tags, user, False)
+
     context = {
         'ArticleVote': ArticleVote,
         'article': article,
@@ -57,6 +87,9 @@ def article_detail(request, article_id):
         'show_new': has_perm(user, 'article_new'),
         'show_vote': has_perm(user, 'article_vote', article),
         'title': article.title,
+        # Tags
+        'defined_tags': defined_tags,
+        'non_defined_tags': non_defined_tags,
     }
     if (user.is_authenticated()):
         context.update({
@@ -219,10 +252,32 @@ def article_vote_index(request):
     votes = get_page(request, votes, 25)
     return render(request, 'article_votes/index.html', {
         'votes': votes,
-        'title': _('Votes'),
+        'title': _('Article votes'),
         'verbose_names': [
             _('Voter'),
             get_verbose(ArticleVote, 'value'),
+            _('Vote date'),
+            _('Article creator'),
+            _('Article title'),
+        ],
+    })
+
+def article_tag_vote_index(request):
+    votes = ArticleTagVote.objects.order_by('-date_created')
+    votes = filter_by_get(votes, request, (
+        ('article__id', 'article'),
+        ('defined_by_article', 'defined'),
+        ('name', 'name'),
+    ))
+    votes = get_page(request, votes, 25)
+    return render(request, 'article_tag_votes/index.html', {
+        'votes': votes,
+        'title': _('Tag votes'),
+        'verbose_names': [
+            _('Voter'),
+            get_verbose(ArticleTagVote, 'name'),
+            get_verbose(ArticleTagVote, 'value'),
+            _('Defined'),
             _('Vote date'),
             _('Article creator'),
             _('Article title'),
