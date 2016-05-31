@@ -126,31 +126,35 @@ window.onload = function() {
 
         // Tag votes.
         {
+            var send_tag_xhr = function(event, ui) {
+                if (!ui.duringInitialization) {
+                    var x = new XMLHttpRequest();
+                    var target = event.target;
+                    x.open('POST', target.getAttribute('data-url'), true);
+                    x.setRequestHeader('X-CSRFToken', Cookies.get('csrftoken'));
+                    x.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=utf-8');
+                    x.onreadystatechange = function() {
+                        if (x.readyState == 4) {
+                            if (x.status != 200) {
+                                alert('Action failed. Reload the page and try again.');
+                            }
+                        }
+                    }
+                    var dataset = target.dataset;
+                    var data = ['article', 'defined-by-article', 'type', 'value'].reduce(
+                        function(o, k) { o[k] = dataset[k]; return o; }, {})
+                    data.name = ui.tagLabel;
+                    x.send(urlencode(data));
+                }
+            }
+
             // tag-it
             $('.my-tags').tagit({
                 beforeTagAdded: function(event, ui) {
-                    if (!ui.duringInitialization) {
-                        var x = new XMLHttpRequest();
-                        var target = event.target;
-                        x.open('POST', target.getAttribute('data-url'), true);
-                        x.setRequestHeader('X-CSRFToken', Cookies.get('csrftoken'));
-                        x.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=utf-8');
-                        x.onreadystatechange = function() {
-                            if (x.readyState == 4) {
-                                if (x.status != 200) {
-                                    alert('Action failed. Reload the page and try again.');
-                                }
-                            }
-                        }
-                        var dataset = target.dataset;
-                        var data = ['article', 'defined-by-article', 'type', 'value'].reduce(
-                            function(o, k) { o[k] = dataset[k]; return o; }, {})
-                        data.name = ui.tagLabel;
-                        x.send(urlencode(data));
-                    }
+                    send_tag_xhr(event, ui);
                 },
                 beforeTagRemoved: function(event, ui) {
-                    console.log(ui.tagLabel);
+                    send_tag_xhr(event, ui);
                 },
                 onTagExists: function(event, ui) {
                     // TODO shows twice?
