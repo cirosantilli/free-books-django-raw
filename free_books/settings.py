@@ -31,6 +31,9 @@ SECRET_KEY = 't-o+68a&vy%@242dygu&+jy6#6oo@ow&gj!4oltd$eiy_tuq=0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 ALLOWED_HOSTS = ['localhost']
+INTERNAL_IPS = (
+    '127.0.0.1',
+)
 
 # Log SQL.
 # http://stackoverflow.com/questions/4375784/log-all-sql-queries

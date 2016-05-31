@@ -43,10 +43,11 @@ urlpatterns.extend([
 prefix = r'article-votes'
 urlpatterns.extend([
     url(r'^' + prefix + '/$', views.article_vote_index, name='article_vote_index'),
-    url(r'^' + prefix + '/new$', views.article_vote_new, name='article_vote'),
+    url(r'^' + prefix + '/new$', views.article_vote_new, name='article_vote_new'),
 ])
 
 prefix = r'tag-votes'
 urlpatterns.extend([
     url(r'^' + prefix + '/$', views.article_tag_vote_index, name='article_tag_vote_index'),
+    url(r'^' + prefix + '/new$', views.article_tag_vote_new, name='article_tag_vote_new'),
 ])

@@ -4,15 +4,19 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db.models import Count, Sum
-from django.http import Http404, HttpResponse, HttpResponseNotFound, HttpResponseNotAllowed, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseNotFound, \
+                        HttpResponseNotAllowed, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
 
-from .models import Article, ArticleForm, ArticleVote, ArticleVoteForm, ArticleTagVote, UserForm, Profile, ProfileForm
+from .models import Article, ArticleForm, ArticleVote, ArticleVoteForm, \
+                    ArticleTagVote, ArticleTagVoteForm, UserForm, Profile, \
+                    ProfileForm
 from .permissions import has_perm
-from .util import filter_by_get, get_page, get_verbose, get_verboses, Http401, render_markup_safe, website_name
+from .util import filter_by_get, get_page, get_verbose, get_verboses, Http401, \
+                  render_markup_safe, website_name \
 
 def home(request):
     return render(request, 'home.html', {'title': website_name})
@@ -143,7 +147,7 @@ def article_detail(request, article_id):
         'show_delete': has_perm(user, 'article_delete', article),
         'show_edit': has_perm(user, 'article_edit', article),
         'show_new': has_perm(user, 'article_new'),
-        'show_vote': has_perm(user, 'article_vote', article),
+        'show_vote': has_perm(user, 'article_vote_new', article),
         'title': article.title,
         # Tags
         'defined_tags': defined_tags,
@@ -234,9 +238,10 @@ def article_vote_new(request):
     - type exists with different value -> change vote value
     """
     if request.method == 'POST':
+        article_id = request.POST.get('article')
         try:
-            article_id = int(request.POST.get('article'))
-        except ValueError:
+            article_id = int(article_id)
+        except:
             pass
         else:
             try:
@@ -244,7 +249,7 @@ def article_vote_new(request):
             except Article.DoesNotExist:
                 pass
             else:
-                if (has_perm(request.user, 'article_vote', article)):
+                if (has_perm(request.user, 'article_vote_new', article)):
                     user = request.user
                     votes = ArticleVote.objects.filter(
                             article=article,
@@ -292,3 +297,48 @@ def article_tag_vote_index(request):
             _('Article title'),
         ],
     })
+
+def article_tag_vote_new(request):
+    """
+    - (name, value) does not exist     -> create vote
+    - (name, value) exists             -> delete vote
+    - name exists with different value -> change vote value
+    """
+    if request.method == 'POST':
+        article_id = request.POST.get('article')
+        try:
+            article_id = int(article_id)
+        except:
+            pass
+        else:
+            try:
+                article = Article.objects.get(pk=article_id)
+            except Article.DoesNotExist:
+                pass
+            else:
+                if (has_perm(request.user, 'article_tag_vote_new', article)):
+                    user = request.user
+                    votes = ArticleTagVote.objects.filter(
+                            article=article,
+                            creator=user,
+                            name=request.POST.get('name'))
+                    post = request.POST.copy()
+                    post['article'] = article.id
+                    post['creator'] = user.id
+                    if (votes):
+                        vote = votes[0]
+                        old_value = vote.value
+                    else:
+                        vote = None
+                        old_value = None
+                    form = ArticleTagVoteForm(post, instance=vote)
+                    if form.is_valid():
+                        vote = form.save(commit=False)
+                        if old_value == vote.value:
+                            vote.delete()
+                            return HttpResponse()
+                        else:
+                            vote.date_created = timezone.now()
+                            vote.save()
+                        return HttpResponse()
+    return HttpResponseNotFound()

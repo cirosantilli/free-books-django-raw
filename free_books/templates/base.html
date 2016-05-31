@@ -5,9 +5,48 @@
 <head>
     <meta charset="utf-8"/>
     <title>{{ title }} - {{ website_name }}</title>
+    {# Could be further DRYed up with something along: https://github.com/gabegaster/django-offlinecdn #}
+    {% if debug %}
+        {# No dependencies. #}
+            <script src="{% static 'local_debug/js.cookie.min.js' %}" ></script>
+            <script src="{% static 'local_debug/taggle.min.js' %}" ></script>
+        {# jquery #}
+            <script src="{% static 'local_debug/jquery.min.js' %}" ></script>
+            <script src="{% static 'local_debug/jquery-ui.min.js' %}" ></script>
+        {# bootstrap #}
+            <link rel="stylesheet" href="{% static 'local_debug/bootstrap.min.css' %}" />
+            <script src="{% static 'local_debug/bootstrap.min.js' %}" ></script>
+        {# select2 #}
+            {# <link rel="stylesheet" href="{% static 'local_debug/select2.min.css' %}" /> #}
+            {# <script src="{% static 'local_debug/select2.min.js' %}" ></script> #}
+        {# tag-it #}
+            <script src="{% static 'local_debug/tag-it.min.js' %}" ></script>
+            <link rel="stylesheet" href="{% static 'local_debug/jquery.tag-it.css' %}" />
+    {% else %}
+        {# No dependencies. #}
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js" ></script>
+            <script src="hhttps://cdnjs.cloudflare.com/ajax/libs/taggle/1.7.1/taggle.min.js" ></script>
+        {# jquery #}
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+        {# bootstrap #}
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        {% comment %}
+        select2
+            I give up. Either impossible, or undocumented.
+            - http://stackoverflow.com/questions/23295168/how-do-i-fire-a-new-ajax-on-select2-new-remove-tag-event
+            - http://stackoverflow.com/questions/28656977/select2-event-for-creating-a-new-tag
+        {% endcomment %}
+            {# <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" /> #}
+            {# <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script> #}
+        {# tag-it #}
+            {# TODO find a CDN. #}
+            {# https://raw.githubusercontent.com/aehlke/tag-it/master/js/tag-it.min.js #}
+            {# https://raw.githubusercontent.com/aehlke/tag-it/master/css/jquery.tagit.css #}
+    {% endif %}
     <link rel="stylesheet" href="{% static 'free_books/main.css' %}" />
     <script src="{% static 'free_books/main.js' %}" ></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js" ></script>
 </head>
 <body data-view="{{ request.resolver_match.url_name }}">
     <header>

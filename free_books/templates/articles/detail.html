@@ -10,7 +10,7 @@
     </div>
     <div>
         {% if show_vote %}
-        <a href="{% url 'article_vote' %}"
+        <a href="{% url 'article_vote_new' %}"
                 class="vote onoff {% if not has_upvoted %}on{% endif %}"
                 data-article="{{ article.id }}"
                 data-type="{{ ArticleVote.LIKE }}"
@@ -28,7 +28,7 @@
     </div>
     <div>
         {% if show_vote %}
-        <a href="{% url 'article_vote' %}"
+        <a href="{% url 'article_vote_new' %}"
                 class="vote onoff {% if not has_downvoted %}on{% endif %}"
                 data-article="{{ article.id }}"
                 data-type="{{ ArticleVote.LIKE }}"

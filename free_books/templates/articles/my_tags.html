@@ -1,0 +1,22 @@
+<ul class="my-tags"
+    data-article="{{ article.id }}"
+    data-defined-by-article="{{ defined01 }}"
+    data-value="{{ value }}"
+    data-url="{% url 'article_tag_vote_new' %}"
+>
+    {% for tag in tags %}
+        <li>{{ tag.name }}</li>
+    {% endfor %}
+</ul>
+{% comment %}
+{# select2 attempt #}
+    <select
+            class="js-my-tags"
+            data-ajax--url="{% url 'article_tag_vote_new' %}"
+            multiple="multiple"
+    >
+        {% for tag in tags %}
+            <option value="{{ tag.name }}">{{ tag.name }}</option>
+        {% endfor %}
+    </select>
+{% endcomment %}

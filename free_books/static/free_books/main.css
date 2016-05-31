@@ -1,13 +1,22 @@
 /* TODO move to SASS when it starts getting messy. */
+body {
+    margin-left: 20px;
+}
 table {
     border-collapse: collapse;
     border: 1px solid black;
     margin-bottom: 5px;
     text-align: left;
 }
-td, th {
+table.clean {
+    border: 0;
+}
+table td, th {
     border: 1px solid black;
     padding: 2px;
+}
+table.clean td, th {
+    border: 0;
 }
 th {
     font-weight: bold;
@@ -58,8 +67,9 @@ main .tags {
     padding-bottom: 2px;
     margin-bottom: 5px;
 }
-main ul.tags-by-user {
+main .tags-by-user {
     margin-bottom: 0px;
+    margin-left: 10px;
     margin-top: 0px;
     list-style-type: none;
 }

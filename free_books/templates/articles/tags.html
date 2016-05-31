@@ -3,43 +3,45 @@
     {% if user != article.creator %}
         <div>
             {% trans "Creator" %}:
-            <ul class="tags-by-user">
-                <li>
-                    {% trans "Up" %}:
-                    {% for tag in tags.creator_up %}
-                        {{ tag.name }}
-                    {% endfor %}
-                </li>
-                <li>
-                    {% trans "Down" %}:
-                    {% for tag in tags.creator_down %}
-                        {{ tag.name }}
-                    {% endfor %}
-                </li>
-            </ul>
+            <table class="clean tags-by-user">
+                <tr>
+                    <td>{% trans "Up" %}:</td>
+                    <td>
+                        {% for tag in tags.creator_up %}
+                            {{ tag.name }}
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>{% trans "Down" %}:</td>
+                    <td>
+                        {% for tag in tags.creator_down %}
+                            {{ tag.name }}
+                        {% endfor %}
+                    </td>
+                </tr>
+            </table>
         </div>
     {% endif %}
     {% if user.is_authenticated %}
         <div>
             {% trans "Mine" %}:
-            <ul class="tags-by-user">
-                <li>
-                    {% trans "Up" %}:
-                    {% for tag in tags.my_up %}
-                        {{ tag.name }}
-                    {% endfor %}
-                    <a href="TODO" id="add-{{ type }}-tag-upvote">Add</a>
-                    <input type="text-area" id="add-{{ type }}-tag-upvote-textarea"></input>
-                </li>
-                <li>
-                    {% trans "Down" %}:
-                    {% for tag in my_tags_down %}
-                        {{ tag.name }}
-                    {% endfor %}
-                    <a href="TODO" id="add-{{ type }}-tag-downvote">Add</a>
-                    <input type="text-area" id="add-{{ type }}-tag-downvote-textarea"></input>
-                </li>
-            </ul>
+            {# TODO remove #}
+            <a id="add-{{ type }}-tag-upvote">Add</a>
+            <table class="clean tags-by-user">
+                <tr>
+                    <td>{% trans "Up" %}:</td>
+                    <td>
+                        {% include "articles/my_tags.html" with tags=tags.my_up defined01=defined01 value="1" %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>{% trans "Down" %}:</td>
+                    <td>
+                        {% include "articles/my_tags.html" with tags=tags.my_down defined01=defined01 value="-1" %}
+                    </td>
+                </tr>
+            </table>
         </div>
     {% endif %}
     <div>

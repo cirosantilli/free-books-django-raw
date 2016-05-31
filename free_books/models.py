@@ -2,10 +2,12 @@
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Count, Sum
 from django.db.models.signals import post_save
 from django.forms import ModelForm
+from django.utils.translation import ugettext_lazy as _
 
 # Remove colon from labels
 # http://stackoverflow.com/a/11622672/895245
@@ -172,6 +174,11 @@ class ArticleVoteForm(MyModelForm):
         model = ArticleVote
         fields = ['article', 'creator', 'type', 'value']
 
+# TODO do we need to translate this message?
+alphanumeric_lower_hyphen_validator = RegexValidator(
+    r'^[0-9a-z-]*$',
+    _('Only lowercase letters "a-z", digits "0-9" and hyphens "-" are allowed.')
+)
 class ArticleTagVote(models.Model):
     UPVOTE = 1
     DOWNVOTE = -1
@@ -184,7 +191,14 @@ class ArticleTagVote(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, blank=True)
     defined_by_article = models.BooleanField(default=True)
     # TODO name restrictions. [0-9a-z-].
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256, validators=[alphanumeric_lower_hyphen_validator])
     value = models.IntegerField(choices=VALUE_CHOICES, default=UPVOTE)
     class Meta:
+        # TODO remove defined_by_article to only allow either defined or not votes.
+        # Requires updating the data generation script.
         unique_together = ('article', 'creator', 'defined_by_article', 'name')
+
+class ArticleTagVoteForm(MyModelForm):
+    class Meta:
+        model = ArticleTagVote
+        fields = ['article', 'creator', 'name', 'value']
