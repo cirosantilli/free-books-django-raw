@@ -16,9 +16,6 @@ var incrementElem = function(elem, delta) {
 /*
 When the link elem is clicked, send an XHR to it's href,
 with POST data taken from the data-* fields.
-
-If the element has an ID `id`, and if there as textarea with id `ID-input`,
-then the value of that input element is also sent on the XHR.
 */
 var addDataPostClickCallback = function(elem) {
     elem.addEventListener(
@@ -148,7 +145,7 @@ window.onload = function() {
                 }
             }
 
-            // tag-it
+            // tag-it for my tags.
             $('.my-tags').tagit({
                 beforeTagAdded: function(event, ui) {
                     send_tag_xhr(event, ui);

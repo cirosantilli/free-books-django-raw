@@ -2,11 +2,14 @@ from markdown2 import markdown
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import models
+from django.db.models import Count, Sum
 from django.http import HttpResponse
 from django.utils.html import mark_safe
 from django.utils.text import capfirst
 from django.utils.translation import ugettext as _
 from django.core.exceptions import FieldDoesNotExist
+
+from .models import ArticleTagVote
 
 def filter_by_get(objs, request, fields):
     """
@@ -33,6 +36,33 @@ def get_page(request, objects, per_page):
     except EmptyPage:
         objects = paginator.page(paginator.num_pages)
     return objects
+
+def get_tags_defined(article, tags, user, defined):
+    tags = tags.filter(defined_by_article=defined)
+    creator_tags = tags.filter(creator=article.creator)
+    creator_tags_up = creator_tags.filter(value=ArticleTagVote.UPVOTE).order_by('name')
+    creator_tags_down = creator_tags.filter(value=ArticleTagVote.DOWNVOTE).order_by('name')
+    tags_with_score_limit = 10
+    tags_with_score = tags \
+            .values('name') \
+            .annotate(linear_score=Sum('value')) \
+            .order_by('-linear_score', 'name')
+    tags_with_score_total_count = tags_with_score.count()
+    tags_with_score = tags_with_score[:tags_with_score_limit]
+    ret = {
+        'all': tags,
+        'creator_up': creator_tags_up,
+        'creator_down': creator_tags_down,
+        'with_score': tags_with_score,
+        'with_score_has_more': tags_with_score_limit < tags_with_score_total_count,
+    }
+    if (user.is_authenticated()):
+        my_tags = tags.filter(creator=user)
+        ret.update({
+            'my_up': my_tags.filter(value=ArticleTagVote.UPVOTE),
+            'my_down': my_tags.filter(value=ArticleTagVote.DOWNVOTE),
+        })
+    return ret
 
 def get_verbose(cls, field_name):
     """

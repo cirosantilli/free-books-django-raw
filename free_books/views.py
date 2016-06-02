@@ -15,7 +15,7 @@ from .models import Article, ArticleForm, ArticleVote, ArticleVoteForm, \
                     ArticleTagVote, ArticleTagVoteForm, UserForm, Profile, \
                     ProfileForm
 from .permissions import has_perm
-from .util import filter_by_get, get_page, get_verbose, get_verboses, Http401, \
+from .util import filter_by_get, get_page, get_tags_defined, get_verbose, get_verboses, Http401, \
                   render_markup_safe, website_name \
 
 def home(request):
@@ -108,29 +108,6 @@ def article_index(request):
 
     })
 
-def get_tags_defined(article, tags, user, defined):
-    tags = tags.filter(defined_by_article=defined)
-    creator_tags = tags.filter(creator=article.creator)
-    creator_tags_up = creator_tags.filter(value=ArticleTagVote.UPVOTE).order_by('name')
-    creator_tags_down = creator_tags.filter(value=ArticleTagVote.DOWNVOTE).order_by('name')
-    tags_with_score = tags \
-            .values('name') \
-            .annotate(linear_score=Sum('value')) \
-            .order_by('-linear_score', 'name')
-    ret = {
-        'all': tags,
-        'creator_up': creator_tags_up,
-        'creator_down': creator_tags_down,
-        'with_score': tags_with_score
-    }
-    if (user.is_authenticated()):
-        my_tags = tags.filter(creator=user)
-        ret.update({
-            'my_up': my_tags.filter(value=ArticleTagVote.UPVOTE),
-            'my_down': my_tags.filter(value=ArticleTagVote.DOWNVOTE),
-        })
-    return ret
-
 def article_detail(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
     user = request.user
@@ -142,6 +119,7 @@ def article_detail(request, article_id):
 
     context = {
         'ArticleVote': ArticleVote,
+        'ArticleTagVote': ArticleTagVote,
         'article': article,
         'body': render_markup_safe(article.body),
         'show_delete': has_perm(user, 'article_delete', article),
@@ -319,9 +297,11 @@ def article_tag_vote_new(request):
                 if (has_perm(request.user, 'article_tag_vote_new', article)):
                     user = request.user
                     votes = ArticleTagVote.objects.filter(
-                            article=article,
-                            creator=user,
-                            name=request.POST.get('name'))
+                        article=article,
+                        creator=user,
+                        defined_by_article=request.POST.get('defined_by_article'),
+                        name=request.POST.get('name'),
+                    )
                     post = request.POST.copy()
                     post['article'] = article.id
                     post['creator'] = user.id

@@ -194,8 +194,6 @@ class ArticleTagVote(models.Model):
     name = models.CharField(max_length=256, validators=[alphanumeric_lower_hyphen_validator])
     value = models.IntegerField(choices=VALUE_CHOICES, default=UPVOTE)
     class Meta:
-        # TODO remove defined_by_article to only allow either defined or not votes.
-        # Requires updating the data generation script.
         unique_together = ('article', 'creator', 'defined_by_article', 'name')
 
 class ArticleTagVoteForm(MyModelForm):

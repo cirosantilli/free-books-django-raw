@@ -81,9 +81,17 @@ footer {
     padding-bottom: 5px;
     padding-top: 5px;
 }
+.active {
+    color: orange;
+}
 .onoff.on .off {
     display: none;
 }
 .onoff:not(.on) .on {
     display: none;
+}
+/* bootstrap */
+button.btn.btn-link {
+    padding: 0;
+    padding: 0;
 }

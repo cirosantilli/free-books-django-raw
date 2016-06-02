@@ -50,7 +50,28 @@
         {% for tag in tags.with_score %}
             {{ tag.name }} (<a
                 href="{% url 'article_tag_vote_index' %}?{% url_set_params article=article.id defined=defined01 name=tag.name %}"
-                >{{ tag.linear_score }}</a>)
+                >{{ tag.linear_score }}</a>)<a
+                  class="vote"
+                  data-article="{{ article.id }}"
+                  data-defined_by_article="{{ defined01 }}"
+                  data-name="{{ tag.name }}"
+                  data-value="{{ ArticleTagVote.UPVOTE }}"
+                  href="{% url 'article_tag_vote_new' %}"
+                  title="{% trans "This tag describes this article well" %}"
+                >&#x25B2;</a><a
+                ><a
+                  class="vote"
+                  data-article="{{ article.id }}"
+                  data-defined_by_article="{{ defined01 }}"
+                  data-name="{{ tag.name }}"
+                  data-value="{{ ArticleTagVote.DOWNVOTE }}"
+                  href="{% url 'article_tag_vote_new' %}"
+                  title="{% trans "This tag does not describe this article well" %}"
+                >&#x25BC;</a>|
         {% endfor %}
+        {% if tags.with_score_has_more %}
+            {# TODO make it AJAX-load more tags #}
+            <b><a href="TODO" title="{% trans "Load more" %}">&#x22EF;</a></b>
+        {% endif %}
     </div>
 </div>

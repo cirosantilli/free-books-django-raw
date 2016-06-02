@@ -13,10 +13,14 @@
         {# jquery #}
             <script src="{% static 'local_debug/jquery.min.js' %}" ></script>
             <script src="{% static 'local_debug/jquery-ui.min.js' %}" ></script>
-            <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
+            {# TODO there are some linked files missing there, where are they? #}
+            {# <link rel="stylesheet" href="{% static 'local_debug/jquery-ui-flick.css' %}" /> #}
+            <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/flick/jquery-ui.css" />
         {# bootstrap #}
             <link rel="stylesheet" href="{% static 'local_debug/bootstrap.min.css' %}" />
             <script src="{% static 'local_debug/bootstrap.min.js' %}" ></script>
+        {# font awesome #}
+            <link rel="stylesheet" href="{% static 'local_debug/font-awesome/css/min.css' %}" />
         {# select2 #}
             {# <link rel="stylesheet" href="{% static 'local_debug/select2.min.css' %}" /> #}
             {# <script src="{% static 'local_debug/select2.min.js' %}" ></script> #}
@@ -26,14 +30,16 @@
     {% else %}
         {# No dependencies. #}
             <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.1/js.cookie.min.js" ></script>
-            <script src="hhttps://cdnjs.cloudflare.com/ajax/libs/taggle/1.7.1/taggle.min.js" ></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/taggle/1.7.1/taggle.min.js" ></script>
         {# jquery #}
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
             <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-            <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
+            <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/flick/jquery-ui.css" />
         {# bootstrap #}
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        {# font awesome #}
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
         {% comment %}
         select2
             I give up. Either impossible, or undocumented.
@@ -43,9 +49,9 @@
             {# <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" /> #}
             {# <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script> #}
         {# tag-it #}
-            {# TODO find a CDN. #}
-            {# https://raw.githubusercontent.com/aehlke/tag-it/master/js/tag-it.min.js #}
-            {# https://raw.githubusercontent.com/aehlke/tag-it/master/css/jquery.tagit.css #}
+            {# TODO find a real CDN. #}
+            <script src="https://cdn.rawgit.com/aehlke/tag-it/6ccd2de95e7cf7e254ad1a82e946450c21e40421/js/tag-it.min.js" ></script>
+            <link rel="stylesheet" href="https://cdn.rawgit.com/aehlke/tag-it/6ccd2de95e7cf7e254ad1a82e946450c21e40421/css/jquery.tagit.css" />
     {% endif %}
     <link rel="stylesheet" href="{% static 'free_books/main.css' %}" />
     <script src="{% static 'free_books/main.js' %}" ></script>
