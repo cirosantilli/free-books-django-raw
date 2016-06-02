@@ -109,7 +109,7 @@ def article_index(request):
     })
 
 def get_tags_defined(article, tags, user, defined):
-    tags = tags.filter(defined_by_article=True)
+    tags = tags.filter(defined_by_article=defined)
     creator_tags = tags.filter(creator=article.creator)
     creator_tags_up = creator_tags.filter(value=ArticleTagVote.UPVOTE).order_by('name')
     creator_tags_down = creator_tags.filter(value=ArticleTagVote.DOWNVOTE).order_by('name')
@@ -137,7 +137,7 @@ def article_detail(request, article_id):
 
     # TODO paging + AJAX load more.
     tags = ArticleTagVote.objects.filter(article=article)
-    defined_tags= get_tags_defined(article, tags, user, True)
+    defined_tags     = get_tags_defined(article, tags, user, True)
     non_defined_tags = get_tags_defined(article, tags, user, False)
 
     context = {

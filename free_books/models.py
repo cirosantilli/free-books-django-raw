@@ -201,4 +201,4 @@ class ArticleTagVote(models.Model):
 class ArticleTagVoteForm(MyModelForm):
     class Meta:
         model = ArticleTagVote
-        fields = ['article', 'creator', 'name', 'value']
+        fields = ['article', 'creator', 'defined_by_article', 'name', 'value']

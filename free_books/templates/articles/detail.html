@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+{{ form.as_p }}
 <div class="actions" >
     <div>
         {% trans "Net votes" %}:
@@ -63,7 +64,7 @@
     </div>
     <div class="tags">
         {% include "articles/tags.html" with tags=defined_tags type="defined" label="Defined tags" defined01="1" %}
-        {% include "articles/tags.html" with tags=non_defined_tags type="non-defined" label="Non-defined tags" defined01="0" %}
+        {% include "articles/tags.html" with tags=non_defined_tags type="non-defined" label="Non-defined tags" defined01="" %}
     </div>
     <div class="body">
         {{ body }}

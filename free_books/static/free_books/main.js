@@ -141,7 +141,7 @@ window.onload = function() {
                         }
                     }
                     var dataset = target.dataset;
-                    var data = ['article', 'defined-by-article', 'type', 'value'].reduce(
+                    var data = ['article', 'defined_by_article', 'type', 'value'].reduce(
                         function(o, k) { o[k] = dataset[k]; return o; }, {})
                     data.name = ui.tagLabel;
                     x.send(urlencode(data));
