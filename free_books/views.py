@@ -126,6 +126,7 @@ def article_detail(request, article_id):
         'show_edit': has_perm(user, 'article_edit', article),
         'show_new': has_perm(user, 'article_new'),
         'show_vote': has_perm(user, 'article_vote_new', article),
+        'show_tag_vote': has_perm(request.user, 'article_tag_vote_new', article),
         'title': article.title,
         # Tags
         'defined_tags': defined_tags,

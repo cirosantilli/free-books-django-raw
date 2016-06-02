@@ -84,6 +84,9 @@ footer {
 .active {
     color: orange;
 }
+a.help {
+    cursor: help;
+}
 .onoff.on .off {
     display: none;
 }

@@ -75,8 +75,8 @@
         <div>{% trans "Last edited" %}: {{ article.last_edited }}</div>
     </div>
     <div class="tags">
-        {% include "articles/tags.html" with tags=defined_tags type="defined" label="Defined tags" defined01="1" %}
-        {% include "articles/tags.html" with tags=non_defined_tags type="non-defined" label="Non-defined tags" defined01="" %}
+        {% include "articles/tags.html" with tags=defined_tags type="defined" label="Defined tags" label_count_help="See all defined tags for this article" defined01="1" %}
+        {% include "articles/tags.html" with tags=non_defined_tags type="non-defined" label="Non-defined tags" label_count_help="See all non-defined tags for this article" defined01="" %}
     </div>
     <div class="body">
         {{ body }}

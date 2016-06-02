@@ -56,8 +56,18 @@ def get_tags_defined(article, tags, user, defined):
         'with_score': tags_with_score,
         'with_score_has_more': tags_with_score_limit < tags_with_score_total_count,
     }
-    if (user.is_authenticated()):
+    if user.is_authenticated():
         my_tags = tags.filter(creator=user)
+        tags_with_score_names = [tag['name'] for tag in tags_with_score]
+        def get_user_has_voted_set(value):
+            return set(my_tags.filter(
+            defined_by_article=defined,
+            name__in=tags_with_score_names,
+            value=value
+            ).values_list('name', flat=True))
+        for tag in tags_with_score:
+            tag['user_has_upvoted'] = (tag['name'] in get_user_has_voted_set(ArticleTagVote.UPVOTE))
+            tag['user_has_downvoted'] = (tag['name'] in get_user_has_voted_set(ArticleTagVote.DOWNVOTE))
         ret.update({
             'my_up': my_tags.filter(value=ArticleTagVote.UPVOTE),
             'my_down': my_tags.filter(value=ArticleTagVote.DOWNVOTE),
