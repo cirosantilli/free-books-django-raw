@@ -1,5 +1,8 @@
 """
 Generate a non-faked deterministic dataset. Good for initial debugging.
+
+TODO: take the 10 first users, articles, etc. and make them denser.
+Doing dense things for all users takes too long, but it is good to have some dense relations as well.
 """
 
 import datetime

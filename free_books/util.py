@@ -40,8 +40,8 @@ def get_page(request, objects, per_page):
 def get_tags_defined(article, tags, user, defined):
     tags = tags.filter(defined_by_article=defined)
     creator_tags = tags.filter(creator=article.creator)
-    creator_tags_up = creator_tags.filter(value=ArticleTagVote.UPVOTE).order_by('name')
-    creator_tags_down = creator_tags.filter(value=ArticleTagVote.DOWNVOTE).order_by('name')
+    creator_tags_up   = creator_tags.filter(value=ArticleTagVote.UPVOTE).order_by('name').values()
+    creator_tags_down = creator_tags.filter(value=ArticleTagVote.DOWNVOTE).order_by('name').values()
     tags_with_score_limit = 10
     tags_with_score = tags \
             .values('name') \
@@ -49,6 +49,33 @@ def get_tags_defined(article, tags, user, defined):
             .order_by('-linear_score', 'name')
     tags_with_score_total_count = tags_with_score.count()
     tags_with_score = tags_with_score[:tags_with_score_limit]
+    if user.is_authenticated():
+        my_tags = tags.filter(creator=user)
+        def add_user_has_up_down_voted(initial_tags, my_tags, defined):
+            """
+            Add user_has_upvoted and user_has_downvoted to initial_tags,
+            which is a list of dicts that contain the 'name' key.
+
+            This allows the template to know if the current user has already
+            upvoted or downvoted existing listed tags.
+
+            TODO maybe find some smart aggregate query that does this. Would it be faster?
+            """
+            initial_tags_names = [tag['name'] for tag in initial_tags]
+            def get_user_has_voted_set(all_tags, name_list, value):
+                return set(all_tags.filter(
+                    defined_by_article=defined,
+                    name__in=name_list,
+                    value=value
+                ).values_list('name', flat=True))
+            user_has_upvoted_set   = get_user_has_voted_set(my_tags, initial_tags_names, ArticleTagVote.UPVOTE)
+            user_has_downvoted_set = get_user_has_voted_set(my_tags, initial_tags_names, ArticleTagVote.DOWNVOTE)
+            for tag in initial_tags:
+                tag['user_has_upvoted']   = (tag['name'] in user_has_upvoted_set)
+                tag['user_has_downvoted'] = (tag['name'] in user_has_downvoted_set)
+        add_user_has_up_down_voted(tags_with_score, my_tags, defined)
+        add_user_has_up_down_voted(creator_tags_up, my_tags, defined)
+        add_user_has_up_down_voted(creator_tags_down, my_tags, defined)
     ret = {
         'all': tags,
         'creator_up': creator_tags_up,
@@ -57,17 +84,6 @@ def get_tags_defined(article, tags, user, defined):
         'with_score_has_more': tags_with_score_limit < tags_with_score_total_count,
     }
     if user.is_authenticated():
-        my_tags = tags.filter(creator=user)
-        tags_with_score_names = [tag['name'] for tag in tags_with_score]
-        def get_user_has_voted_set(value):
-            return set(my_tags.filter(
-            defined_by_article=defined,
-            name__in=tags_with_score_names,
-            value=value
-            ).values_list('name', flat=True))
-        for tag in tags_with_score:
-            tag['user_has_upvoted'] = (tag['name'] in get_user_has_voted_set(ArticleTagVote.UPVOTE))
-            tag['user_has_downvoted'] = (tag['name'] in get_user_has_voted_set(ArticleTagVote.DOWNVOTE))
         ret.update({
             'my_up': my_tags.filter(value=ArticleTagVote.UPVOTE),
             'my_down': my_tags.filter(value=ArticleTagVote.DOWNVOTE),

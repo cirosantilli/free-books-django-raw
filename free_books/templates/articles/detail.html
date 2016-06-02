@@ -4,7 +4,7 @@
 {{ form.as_p }}
 <div class="actions" >
     <div>
-        {% trans "Net votes" %}:
+        {#<i class="fa fa-balance-scale" aria-hidden="true"></i>#}{% trans "Net votes" %}:
         <a href="{% url 'article_vote_index' %}?{% url_set_params article=article.id %}"
            title="{% trans "See all votes for this article" %}"
         >

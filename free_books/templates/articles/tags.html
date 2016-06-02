@@ -9,25 +9,8 @@
                 href="{% url 'article_tag_vote_index' %}?{% url_set_params article=article.id defined=defined01 name=tag.name %}"
                 title="{% trans "See all votes for this tag for this article" %}"
                 >{{ tag.linear_score }}</a
-            >){% if show_tag_vote %}<a
-                    class="{% if tag.user_has_upvoted %}active {% endif%}vote"
-                    data-article="{{ article.id }}"
-                    data-defined_by_article="{{ defined01 }}"
-                    data-name="{{ tag.name }}"
-                    data-value="{{ ArticleTagVote.UPVOTE }}"
-                    href="{% url 'article_tag_vote_new' %}"
-                    title="{% if tag.user_has_upvoted %}{% trans "Undo upvote" %}{% else %}{% trans "This tag describes this article well" %}{% endif %}"
-                >&#x25B2;</a><a
-                ><a
-                    class="{% if tag.user_has_downvoted %}active {% endif%}vote"
-                    data-article="{{ article.id }}"
-                    data-defined_by_article="{{ defined01 }}"
-                    data-name="{{ tag.name }}"
-                    data-value="{{ ArticleTagVote.DOWNVOTE }}"
-                    href="{% url 'article_tag_vote_new' %}"
-                    title="{% if tag.user_has_downvoted %}{% trans "Undo downvote" %}{% else %}{% trans "This tag does not describe this article well" %}{% endif %}"
-                >&#x25BC;</a>|
-            {% endif %}
+            >){% include "articles/tag_up_down.html" %}
+            |
         {% endfor %}
         {% if tags.with_score_has_more %}
             {# TODO make it AJAX-load more tags #}
@@ -42,7 +25,7 @@
                     <td>{% trans "Up" %}:</td>
                     <td>
                         {% for tag in tags.creator_up %}
-                            {{ tag.name }}
+                            {{ tag.name }} {% include "articles/tag_up_down.html" %} |
                         {% endfor %}
                     </td>
                 </tr>
@@ -50,7 +33,7 @@
                     <td>{% trans "Down" %}:</td>
                     <td>
                         {% for tag in tags.creator_down %}
-                            {{ tag.name }}
+                            {{ tag.name }} {% include "articles/tag_up_down.html" %} |
                         {% endfor %}
                     </td>
                 </tr>
