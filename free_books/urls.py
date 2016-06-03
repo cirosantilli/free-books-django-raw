@@ -50,4 +50,5 @@ prefix = r'tag-votes'
 urlpatterns.extend([
     url(r'^' + prefix + '/$', views.article_tag_vote_index, name='article_tag_vote_index'),
     url(r'^' + prefix + '/new$', views.article_tag_vote_new, name='article_tag_vote_new'),
+    url(r'^' + prefix + '/get_more$', views.article_tag_vote_get_more, name='article_tag_vote_get_more'),
 ])

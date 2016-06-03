@@ -13,11 +13,28 @@ var incrementElem = function(elem, delta) {
     elem.innerHTML = parseInt(elem.innerHTML) + delta;
 }
 
+// http://stackoverflow.com/a/35385518/895245
+function htmlToElements(html) {
+    var template = document.createElement('template');
+    template.innerHTML = html;
+    return template.content.childNodes;
+}
+
+function insertBefore(newElem, oldElem) {
+    oldElem.parentElement.insertBefore(newElem, oldElem);
+}
+
 /*
 When the link elem is clicked, send an XHR to it's href,
 with POST data taken from the data-* fields.
 */
-var addDataPostClickCallback = function(elem) {
+var addDataPostClickCallback = function(elem, successCallback, extraParamsCallback) {
+    if (typeof successCallback  === 'undefined') {
+        successCallback = function(xhr, currentTarget) {};
+    }
+    if (typeof extraParamsCallback  === 'undefined') {
+        extraParamsCallback = function() { return {}; };
+    }
     elem.addEventListener(
         'click',
         function(event) {
@@ -31,27 +48,38 @@ var addDataPostClickCallback = function(elem) {
             x.onreadystatechange = function() {
                 if (x.readyState == 4) {
                     if (x.status != 200) {
-                        // TODO translate this.
                         alert('Action failed. Reload the page and try again.');
+                    } else {
+                        successCallback(x, currentTarget);
                     }
                 }
             }
-            x.send(urlencode(currentTarget.dataset));
+            params = currentTarget.dataset;
+            extraParams = extraParamsCallback();
+            for (var attrname in extraParams) {
+                params[attrname] = extraParams[attrname];
+            }
+            x.send(urlencode(params));
         },
         false
     );
 }
 
+var addVoteHandlers = function(root) {
+    // Send request to server.
+    var elements = root.querySelectorAll('.vote');
+    for (var i = 0; i < elements.length; i++) {
+        addDataPostClickCallback(elements[i]);
+    }
+}
+
 window.onload = function() {
     var view = document.body.getAttribute('data-view');
+    var data_js_json = JSON.parse(document.body.dataset['jsJson']);
     if (view === 'article_detail') {
         // Article votes
         {
-            // Send request to server.
-            var elements = document.querySelectorAll('.vote');
-            for (var i = 0; i < elements.length; i++) {
-                addDataPostClickCallback(elements[i]);
-            }
+            addVoteHandlers(document);
 
             // Optimistically update the UI locally.
             var upvote_count_elem = document.getElementById('upvote-count');
@@ -159,6 +187,30 @@ window.onload = function() {
                     return false;
                 },
             });
+
+            // Load more votes.
+            var elements = document.querySelectorAll('.get-more-votes');
+            var loadMoreVotesDefinedNextOffset = data_js_json['loadMoreVotesDefinedNextOffset'];
+            var loadMoreVotesNonDefinedNextOffset = loadMoreVotesDefinedNextOffset;
+            for (var i = 0; i < elements.length; i++) {
+                addDataPostClickCallback(
+                    elements[i],
+                    function(xhr, currentTarget) {
+                        jsonResponse = JSON.parse(xhr.responseText);
+                        var template = document.createElement('span');
+                        template.innerHTML = jsonResponse.html;
+                        addVoteHandlers(template);
+                        insertBefore(template, currentTarget);
+                        loadMoreVotesDefinedNextOffset += data_js_json['loadMoreVotesDefinedNextOffset'];
+                        if (!jsonResponse.with_score_has_more) {
+                            currentTarget.parentElement.removeChild(currentTarget);
+                        }
+                    },
+                    function() {
+                        return {'offset': loadMoreVotesDefinedNextOffset};
+                    }
+                );
+            }
 
             // select2 attempt.
             {

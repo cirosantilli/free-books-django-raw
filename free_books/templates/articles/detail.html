@@ -76,7 +76,7 @@
     </div>
     <div class="tags">
         {% include "articles/tags.html" with tags=defined_tags type="defined" label="Defined tags" label_count_help="See all defined tags for this article" defined01="1" %}
-        {% include "articles/tags.html" with tags=non_defined_tags type="non-defined" label="Non-defined tags" label_count_help="See all non-defined tags for this article" defined01="" %}
+        {% include "articles/tags.html" with tags=non_defined_tags type="non-defined" label="Non-defined tags" label_count_help="See all non-defined tags for this article" defined01="0" %}
     </div>
     <div class="body">
         {{ body }}

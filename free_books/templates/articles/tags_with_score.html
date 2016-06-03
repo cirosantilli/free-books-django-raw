@@ -1,0 +1,8 @@
+{% for tag in tags.with_score %}
+    {{ tag.name }} (<a
+        href="{% url 'article_tag_vote_index' %}?{% url_set_params article=article.id defined=defined01 name=tag.name %}"
+        title="{% trans "See all votes for this tag for this article" %}"
+        >{{ tag.linear_score }}</a
+    >){% include "articles/tag_up_down.html" with show_tag_vote=show_tag_vote %}
+    |
+{% endfor %}

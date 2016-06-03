@@ -1,12 +1,16 @@
 import datetime
+import json
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db.models import Count, Sum
 from django.http import Http404, HttpResponse, HttpResponseNotFound, \
-                        HttpResponseNotAllowed, HttpResponseRedirect
+                        HttpResponseNotAllowed, HttpResponseRedirect, \
+                        JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template import Context, RequestContext, Template
+from django.template.loader import get_template
 from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
@@ -15,8 +19,10 @@ from .models import Article, ArticleForm, ArticleVote, ArticleVoteForm, \
                     ArticleTagVote, ArticleTagVoteForm, UserForm, Profile, \
                     ProfileForm
 from .permissions import has_perm
-from .util import filter_by_get, get_page, get_tags_defined, get_verbose, get_verboses, Http401, \
-                  render_markup_safe, website_name \
+from .util import filter_by_get, get_page, get_tags_defined, get_tags_with_score, \
+                  get_verbose, get_verboses, Http401, render_markup_safe, website_name
+
+NTAGS_GET = 10
 
 def home(request):
     return render(request, 'home.html', {'title': website_name})
@@ -112,16 +118,15 @@ def article_detail(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
     user = request.user
 
-    # TODO paging + AJAX load more.
-    tags = ArticleTagVote.objects.filter(article=article)
-    defined_tags     = get_tags_defined(article, tags, user, True)
-    non_defined_tags = get_tags_defined(article, tags, user, False)
+    defined_tags     = get_tags_defined(article, user, True, 0, NTAGS_GET)
+    non_defined_tags = get_tags_defined(article, user, False, 0, NTAGS_GET)
 
     context = {
         'ArticleVote': ArticleVote,
         'ArticleTagVote': ArticleTagVote,
         'article': article,
         'body': render_markup_safe(article.body),
+        'data_js_json': mark_safe(json.dumps({'loadMoreVotesLimit': NTAGS_GET})),
         'show_delete': has_perm(user, 'article_delete', article),
         'show_edit': has_perm(user, 'article_edit', article),
         'show_new': has_perm(user, 'article_new'),
@@ -322,4 +327,30 @@ def article_tag_vote_new(request):
                             vote.date_created = timezone.now()
                             vote.save()
                         return HttpResponse()
+    return HttpResponseNotFound()
+
+def article_tag_vote_get_more(request):
+    article_id = request.POST.get('article')
+    try:
+        article_id = int(article_id)
+        offset = int(request.POST.get('offset'))
+    except:
+        pass
+    else:
+        article = get_object_or_404(Article, pk=article_id)
+        defined = request.POST.get('defined') == '1'
+        tags = ArticleTagVote.objects.filter(article=article, defined_by_article=defined)
+        tags_with_score = get_tags_with_score(tags, request.user, defined, offset, NTAGS_GET)
+        return JsonResponse({
+            # TODO this is horrendous and should be replaced with a client side framework.
+            'html': get_template('articles/tags_with_score.html').render({
+                'ArticleTagVote': ArticleTagVote,
+                'article': article,
+                'defined01': '1' if defined else '0',
+                'request': request,
+                'show_tag_vote': has_perm(request.user, 'article_tag_vote_new', article),
+                'tags': tags_with_score,
+            }),
+            'with_score_has_more': tags_with_score['with_score_has_more']
+        })
     return HttpResponseNotFound()

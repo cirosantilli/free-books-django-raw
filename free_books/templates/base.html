@@ -56,7 +56,7 @@
     <link rel="stylesheet" href="{% static 'free_books/main.css' %}" />
     <script src="{% static 'free_books/main.js' %}" ></script>
 </head>
-<body data-view="{{ request.resolver_match.url_name }}">
+<body data-view="{{ request.resolver_match.url_name }}" data-js-json='{{ data_js_json }}' >
     <header>
         <nav>
             <div class="login">

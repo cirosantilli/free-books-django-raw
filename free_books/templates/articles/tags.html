@@ -4,17 +4,13 @@
         (<a href="{% url 'article_tag_vote_index' %}?{% url_set_params article=article.id defined=defined01 %}"
             title="{% trans label_count_help %}"
             >{{ tags.all.count }}</a>):
-        {% for tag in tags.with_score %}
-            {{ tag.name }} (<a
-                href="{% url 'article_tag_vote_index' %}?{% url_set_params article=article.id defined=defined01 name=tag.name %}"
-                title="{% trans "See all votes for this tag for this article" %}"
-                >{{ tag.linear_score }}</a
-            >){% include "articles/tag_up_down.html" %}
-            |
-        {% endfor %}
+        {% include "articles/tags_with_score.html" with article=article tags=tags show_tag_vote=show_tag_vote %}
         {% if tags.with_score_has_more %}
-            {# TODO make it AJAX-load more tags #}
-            <b><a href="TODO" title="{% trans "Load more" %}">&#x22EF;</a></b>
+            <a class="get-more-votes"
+               data-article="{{ article.id }}"
+               data-defined="{{ defined01 }}"
+               href="{% url 'article_tag_vote_get_more' %}"
+               title="{% trans "Load more" %}"><b>&#x22EF;</b></a>
         {% endif %}
     </div>
     {% if user != article.creator %}
