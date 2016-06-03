@@ -1,6 +1,6 @@
 <ul class="my-tags"
     data-article="{{ article.id }}"
-    data-defined_by_article="{{ defined01 }}"
+    {% if defined01 == '1' %}data-defined_by_article="on"{% endif %}
     data-value="{{ value }}"
     data-url="{% url 'article_tag_vote_new' %}"
 >

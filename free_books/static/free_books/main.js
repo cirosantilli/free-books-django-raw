@@ -33,7 +33,7 @@ var addDataPostClickCallback = function(elem, successCallback, extraParamsCallba
         successCallback = function(xhr, currentTarget) {};
     }
     if (typeof extraParamsCallback  === 'undefined') {
-        extraParamsCallback = function() { return {}; };
+        extraParamsCallback = function(currentTarget) { return {}; };
     }
     elem.addEventListener(
         'click',
@@ -55,7 +55,7 @@ var addDataPostClickCallback = function(elem, successCallback, extraParamsCallba
                 }
             }
             params = currentTarget.dataset;
-            extraParams = extraParamsCallback();
+            extraParams = extraParamsCallback(currentTarget);
             for (var attrname in extraParams) {
                 params[attrname] = extraParams[attrname];
             }
@@ -167,7 +167,7 @@ window.onload = function() {
                     }
                     var dataset = target.dataset;
                     var data = ['article', 'defined_by_article', 'type', 'value'].reduce(
-                        function(o, k) { o[k] = dataset[k]; return o; }, {})
+                        function(o, k) { v = dataset[k]; if (v) { o[k] = v}; return o; }, {})
                     data.name = ui.tagLabel;
                     x.send(urlencode(data));
                 }
@@ -190,8 +190,11 @@ window.onload = function() {
 
             // Load more votes.
             var elements = document.querySelectorAll('.get-more-votes');
-            var loadMoreVotesDefinedNextOffset = data_js_json['loadMoreVotesDefinedNextOffset'];
-            var loadMoreVotesNonDefinedNextOffset = loadMoreVotesDefinedNextOffset;
+            var loadMoreVotesLimit = data_js_json['loadMoreVotesLimit'];
+            var loadMoreVotesDefinedNextOffset = {
+                '0': loadMoreVotesLimit,
+                '1': loadMoreVotesLimit
+            };
             for (var i = 0; i < elements.length; i++) {
                 addDataPostClickCallback(
                     elements[i],
@@ -201,13 +204,13 @@ window.onload = function() {
                         template.innerHTML = jsonResponse.html;
                         addVoteHandlers(template);
                         insertBefore(template, currentTarget);
-                        loadMoreVotesDefinedNextOffset += data_js_json['loadMoreVotesDefinedNextOffset'];
+                        loadMoreVotesDefinedNextOffset[currentTarget.dataset.defined] += loadMoreVotesLimit;
                         if (!jsonResponse.with_score_has_more) {
                             currentTarget.parentElement.removeChild(currentTarget);
                         }
                     },
-                    function() {
-                        return {'offset': loadMoreVotesDefinedNextOffset};
+                    function(currentTarget) {
+                        return {'offset': loadMoreVotesDefinedNextOffset[currentTarget.dataset.defined]};
                     }
                 );
             }

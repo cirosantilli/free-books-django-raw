@@ -1,7 +1,7 @@
 {% if show_tag_vote %}<a
         class="{% if tag.user_has_upvoted %}active {% endif%}vote"
         data-article="{{ article.id }}"
-        data-defined_by_article="{{ defined01 }}"
+        {% if defined01 == "1" %}data-defined_by_article="on"{% endif %}
         data-name="{{ tag.name }}"
         data-value="{{ ArticleTagVote.UPVOTE }}"
         href="{% url 'article_tag_vote_new' %}"
@@ -10,7 +10,7 @@
     ><a
         class="{% if tag.user_has_downvoted %}active {% endif%}vote"
         data-article="{{ article.id }}"
-        data-defined_by_article="{{ defined01 }}"
+        {% if defined01 == "1" %}data-defined_by_article="on"{% endif %}
         data-name="{{ tag.name }}"
         data-value="{{ ArticleTagVote.DOWNVOTE }}"
         href="{% url 'article_tag_vote_new' %}"

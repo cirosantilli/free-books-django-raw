@@ -305,7 +305,7 @@ def article_tag_vote_new(request):
                     votes = ArticleTagVote.objects.filter(
                         article=article,
                         creator=user,
-                        defined_by_article=request.POST.get('defined_by_article'),
+                        defined_by_article=bool(request.POST.get('defined_by_article')),
                         name=request.POST.get('name'),
                     )
                     post = request.POST.copy()
@@ -318,6 +318,8 @@ def article_tag_vote_new(request):
                         vote = None
                         old_value = None
                     form = ArticleTagVoteForm(post, instance=vote)
+                    # import pdb
+                    # pdb.set_trace()
                     if form.is_valid():
                         vote = form.save(commit=False)
                         if old_value == vote.value:
