@@ -19,12 +19,11 @@
                 data-type="{{ ArticleVote.LIKE }}"
                 data-value="{{ ArticleVote.UPVOTE }}"
                 id="upvote-onoff"
-                title="{% trans "I like this article" %}"
             >
         {% endif %}
-        <span class="on" id="upvote" >{{ upvote_sign }} {% trans 'Upvote' %}</span>
+        <span class="on" id="upvote" title="{% trans "I like this article" %}">{{ upvote_sign }} {% trans 'Upvote' %}</span>
         {% if show_vote %}
-            <span class="active off" id="undo-upvote" >{{ upvote_sign }} {% trans 'Undo upvote' %}</span>
+            <span class="active off" id="undo-upvote" title="{% trans "Undo upvote" %}">{{ upvote_sign }} {% trans 'Undo upvote' %}</span>
             </a>
         {% endif %}
         (<a href="{% url 'article_vote_index' %}?{% url_set_params article=article.id value=ArticleVote.UPVOTE %}"

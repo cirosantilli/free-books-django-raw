@@ -190,9 +190,9 @@ window.onload = function() {
                                 tagVoteScoreElem = tagVoteScoreElem[0]
                                 var tagVoteCountElem = currentTarget.closest('.article-tag-vote-all').getElementsByClassName('article-tag-vote-count')[0]
                             }
-                            var myTagsElem = currentTarget.closest('.defined-or-not-tags') 
-                            var myUpTagsElem = $(myTagsElem.querySelectorAll('.my-tags[data-value="1"]')[0])
-                            var myDownTagsElem = $(myTagsElem.querySelectorAll('.my-tags[data-value="-1"]')[0])
+                            var definedOrNotTags = currentTarget.closest('.defined-or-not-tags')
+                            var myUpTagsElem = $(definedOrNotTags.querySelectorAll('.my-tags[data-value="1"]')[0])
+                            var myDownTagsElem = $(definedOrNotTags.querySelectorAll('.my-tags[data-value="-1"]')[0])
                             var tagVoteScoreDelta
                             var tagVoteCountDelta
                             tagitDoXhr = false

@@ -85,11 +85,25 @@ footer {
 a.help {
     cursor: help;
 }
+
+/* Votes */
 a.vote {
     text-decoration: none;
 }
-.active {
+a.article-tag-vote {
+    text-decoration: none;
+}
+a.vote .on, a.article-tag-vote .on {
+    color: blue;
+}
+a.vote .off, a.article-tag-vote .off {
     color: orange;
+}
+a.vote:hover .on, a.article-tag-vote:hover .on {
+    color: orange;
+}
+a.vote:hover .off, a.article-tag-vote:hover .off {
+    color: blue;
 }
 .onoff.on .off {
     display: none;
@@ -97,6 +111,7 @@ a.vote {
 .onoff:not(.on) .on {
     display: none;
 }
+
 /* bootstrap */
 button.btn.btn-link {
     padding: 0;

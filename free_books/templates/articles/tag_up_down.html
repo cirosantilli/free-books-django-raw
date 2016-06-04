@@ -5,8 +5,8 @@
             data-name="{{ tag.name }}"
             data-value="{{ ArticleTagVote.UPVOTE }}"
             href="{% url 'article_tag_vote_new' %}"
-        ><span class="on"         title="{% trans "This tag describes this article well" %}">{{ upvote_sign }}</span
-        ><span class="active off" title="{% trans "Undo upvote" %}">{{ upvote_sign }}</span
+        ><span class="on"  title="{% trans "This tag describes this article well" %}">{{ upvote_sign }}</span
+        ><span class="off" title="{% trans "Undo upvote" %}">{{ upvote_sign }}</span
         ></a><a
     ><a
             class="onoff {% if not tag.user_has_downvoted %}on{% endif%} article-tag-vote downvote"
@@ -15,6 +15,6 @@
             data-name="{{ tag.name }}"
             data-value="{{ ArticleTagVote.DOWNVOTE }}"
             href="{% url 'article_tag_vote_new' %}"
-        ><span class="on"         title="{% trans "This tag does not describe this article well" %}">{{ downvote_sign }}</span
-        ><span class="active off" title="{% trans "Undo downvote" %}">{{ downvote_sign }}</span
+        ><span class="on"  title="{% trans "This tag does not describe this article well" %}">{{ downvote_sign }}</span
+        ><span class="off" title="{% trans "Undo downvote" %}">{{ downvote_sign }}</span
     ></a>{% endif %}
