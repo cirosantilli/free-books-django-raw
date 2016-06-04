@@ -1,3 +1,12 @@
+/*
+I'm a complete JS newb.
+
+Using as little jQuery as possible and assuming super modern browsers.
+
+AJAX UI updates optimistically locally, errors just show an error message
+that asks for a page reload, without correction.
+*/
+
 // http://stackoverflow.com/a/1714899/895245
 var urlencode = function(obj) {
     var str = []
@@ -83,7 +92,6 @@ window.onload = function() {
 
             addVoteHandlers(document)
 
-            // Optimistically update the UI locally.
             var upvote_count_elem = document.getElementById('upvote-count')
             var upvote_onoff_elem = document.getElementById('upvote-onoff')
             var downvote_count_elem = document.getElementById('downvote-count')
@@ -160,7 +168,9 @@ window.onload = function() {
                         elements[i],
                         undefined,
                         function(currentTarget) {
-                            classList = currentTarget.classList
+                            var classList = currentTarget.classList
+                            var isUpvote
+                            var otherVoteElemClass
                             if (classList.contains('upvote')) {
                                 isUpvote = true;
                                 otherVoteElemClass = 'downvote'
@@ -168,11 +178,18 @@ window.onload = function() {
                                 isUpvote = false;
                                 otherVoteElemClass = 'upvote'
                             }
-                            parentElement = currentTarget.parentElement
-                            otherVoteElem = parentElement.getElementsByClassName(otherVoteElemClass)[0]
-                            otherVoteElemClassList = otherVoteElem.classList
-                            tagVoteScoreElem = parentElement.getElementsByClassName('count')[0]
-                            tagVoteCountElem = currentTarget.closest('.article-tag-vote-all').getElementsByClassName('article-tag-vote-count')[0]
+                            var articleTagWithScoreElem = currentTarget.closest('.article-tag-with-score')
+                            var tagName = articleTagWithScoreElem.dataset.name
+                            var otherVoteElem = articleTagWithScoreElem.getElementsByClassName(otherVoteElemClass)[0]
+                            var otherVoteElemClassList = otherVoteElem.classList
+                            var tagVoteScoreElem = articleTagWithScoreElem.getElementsByClassName('count')[0]
+                            var tagVoteCountElem = currentTarget.closest('.article-tag-vote-all').getElementsByClassName('article-tag-vote-count')[0]
+                            var myTagsElem = currentTarget.closest('.defined-or-not-tags') 
+                            var myUpTagsElem = $(myTagsElem.querySelectorAll('.my-tags[data-value="1"]')[0])
+                            var myDownTagsElem = $(myTagsElem.querySelectorAll('.my-tags[data-value="-1"]')[0])
+                            var tagVoteScoreDelta
+                            var tagVoteCountDelta
+                            tagitDoXhr = false
                             if (classList.contains('on')) {
                                 classList.remove('on')
                                 if (otherVoteElemClassList.contains('on')) {
@@ -182,19 +199,27 @@ window.onload = function() {
                                     tagVoteScoreDelta = 2
                                     tagVoteCountDelta = 0
                                 }
-                                if (!isUpvote) {
+                                if (isUpvote) {
+                                    myUpTagsElem.tagit('createTag', tagName);
+                                    tagitRemoveTagIfExists(myDownTagsElem, tagName)
+                                } else {
                                     tagVoteScoreDelta *= -1
+                                    myDownTagsElem.tagit('createTag', tagName);
+                                    tagitRemoveTagIfExists(myUpTagsElem, tagName)
                                 }
                                 otherVoteElem.classList.add('on')
                             } else {
                                 classList.add('on')
                                 if (isUpvote) {
                                     tagVoteScoreDelta = -1
+                                    myUpTagsElem.tagit('removeTagByLabel', tagName);
                                 } else {
-                                    tagVoteScoreDelta = 1
+                                    var tagVoteScoreDelta = 1
+                                    myDownTagsElem.tagit('removeTagByLabel', tagName);
                                 }
                                 tagVoteCountDelta = -1
                             }
+                            tagitDoXhr = true
                             incrementElem(tagVoteScoreElem, tagVoteScoreDelta)
                             incrementElem(tagVoteCountElem, tagVoteCountDelta)
                         }
@@ -227,19 +252,31 @@ window.onload = function() {
             }
 
             // tag-it for my tags.
-            $('.my-tags').tagit({
-                beforeTagAdded: function(event, ui) {
-                    send_tag_xhr(event, ui)
-                },
-                beforeTagRemoved: function(event, ui) {
-                    send_tag_xhr(event, ui)
-                },
-                onTagExists: function(event, ui) {
-                    // TODO shows twice?
-                    alert('Tag already exsists.')
-                    return false
-                },
-            })
+            {
+                // Because programmatic tag additions with tagit('createTag' triggers the AJAX again.
+                var tagitDoXhr = true
+                var tagitRemoveTagIfExists = function(tagitElem, tagName) {
+                    if (tagitElem.tagit('assignedTags').includes(tagName)) {
+                        tagitElem.tagit('removeTagByLabel', tagName);
+                    }
+                }
+                $('.my-tags').tagit({
+                    beforeTagAdded: function(event, ui) {
+                        if (tagitDoXhr) {
+                            send_tag_xhr(event, ui)
+                        }
+                    },
+                    beforeTagRemoved: function(event, ui) {
+                        if (tagitDoXhr) {
+                            send_tag_xhr(event, ui)
+                        }
+                    },
+                    onTagExists: function(event, ui) {
+                        // TODO shows twice?
+                        alert('Tag already exsists.')
+                    },
+                })
+            }
 
             // Load more votes.
             var elements = document.querySelectorAll('.get-more-votes')
