@@ -1,0 +1,128 @@
+/* TODO move to SASS when it starts getting messy. */
+body {
+    margin-left: 20px;
+}
+footer {
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+    margin-bottom: 10px;
+    margin-top: 50px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+form label {
+    display:block;
+    margin-bottom: 5px;
+}
+h1 {
+    border-bottom: 1px solid black;
+    margin-bottom: 15px;
+}
+main {
+    .actions {
+        border-bottom: 1px solid black;
+        padding-bottom: 2px;
+        margin-bottom: 5px;
+    }
+    .search {
+        border-bottom: 1px solid black;
+        padding-bottom: 2px;
+        margin-bottom: 5px;
+    }
+    .defined-tags {
+        border-bottom: 1px solid black;
+        padding-bottom: 2px;
+        margin-bottom: 5px;
+    }
+    .metadata {
+        border-bottom: 1px solid black;
+        padding-bottom: 2px;
+        margin-bottom: 5px;
+    }
+    .tags {
+        border-bottom: 1px solid black;
+        padding-bottom: 2px;
+        margin-bottom: 5px;
+    }
+    .tags-by-user {
+        margin-bottom: 0px;
+        margin-left: 10px;
+        margin-top: 0px;
+        list-style-type: none;
+    }
+}
+nav {
+    .login {
+        border-bottom: 1px solid black;
+        padding-bottom: 2px;
+        margin-bottom: 5px;
+    }
+    .sections {
+        border-bottom: 1px solid black;
+        padding-bottom: 2px;
+        margin-bottom: 5px;
+    }
+}
+table {
+    border-collapse: collapse;
+    border: 1px solid black;
+    margin-bottom: 5px;
+    text-align: left;
+    &.clean {
+        border: 0;
+        td, th {
+            border: 0;
+        }
+    }
+    td, th {
+        border: 1px solid black;
+        padding: 2px;
+    }
+    th {
+        font-weight: bold;
+    }
+}
+
+/* Active elements. */
+a.help {
+    cursor: help;
+}
+
+/* Votes */
+a {
+    &.vote, &.article-tag-vote {
+        text-decoration: none;
+    }
+    &.vote, &.article-tag-vote {
+        $active-color: orange;
+        $inactive-color: blue;
+        .on {
+            color: $inactive-color;
+        }
+        .off {
+            color: $active-color;
+        }
+        &:hover {
+            .on {
+                color: $active-color;
+            }
+            .off {
+                color: $inactive-color;
+            }
+        }
+    }
+}
+.onoff {
+    &.on .off {
+        display: none;
+    }
+    &:not(.on) .on {
+        display: none;
+    }
+}
+
+/* bootstrap */
+button.btn.btn-link {
+    border: 0;
+    padding: 0;
+}
