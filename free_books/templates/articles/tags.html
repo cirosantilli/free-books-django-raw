@@ -1,7 +1,8 @@
 <div class="{{ type }}-tags">
-    <div>
+    <div class="article-tag-vote-all">
         <a class="help" href="{% url 'help' %}#defined-tags" title="{% trans "What are defined tags?" %}">{% trans label %}</a>
-        (<a href="{% url 'article_tag_vote_index' %}?{% url_set_params article=article.id defined=defined01 %}"
+        (<a class="article-tag-vote-count"
+            href="{% url 'article_tag_vote_index' %}?{% url_set_params article=article.id defined=defined01 %}"
             title="{% trans label_count_help %}"
             >{{ tags.all.count }}</a>):
         {% include "articles/tags_with_score.html" with article=article tags=tags show_tag_vote=show_tag_vote %}

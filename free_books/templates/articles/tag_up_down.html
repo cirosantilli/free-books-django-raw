@@ -1,5 +1,5 @@
 {% if show_tag_vote %}<a
-            class="onoff {% if not tag.user_has_upvoted %}on{% endif%} vote"
+            class="onoff {% if not tag.user_has_upvoted %}on{% endif%} article-tag-vote upvote"
             data-article="{{ article.id }}"
             {% if defined01 == "1" %}data-defined_by_article="on"{% endif %}
             data-name="{{ tag.name }}"
@@ -9,7 +9,7 @@
         ><span class="active off" title="{% trans "Undo upvote" %}">{{ upvote_sign }}</span
         ></a><a
     ><a
-            class="onoff {% if not tag.user_has_downvoted %}on{% endif%} vote"
+            class="onoff {% if not tag.user_has_downvoted %}on{% endif%} article-tag-vote downvote"
             data-article="{{ article.id }}"
             {% if defined01 == "1" %}data-defined_by_article="on"{% endif %}
             data-name="{{ tag.name }}"
