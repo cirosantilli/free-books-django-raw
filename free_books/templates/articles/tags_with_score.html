@@ -1,5 +1,5 @@
 {% for tag in tags.with_score %}
-    <span class="article-tag-with-score" data-name="{{ tag.name }}">
+    <span class="article-tag" data-name="{{ tag.name }}">
         {{ tag.name }} (<a
             class="count"
             href="{% url 'article_tag_vote_index' %}?{% url_set_params article=article.id defined=defined01 name=tag.name %}"

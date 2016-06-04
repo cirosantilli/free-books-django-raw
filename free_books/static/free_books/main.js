@@ -178,12 +178,18 @@ window.onload = function() {
                                 isUpvote = false;
                                 otherVoteElemClass = 'upvote'
                             }
-                            var articleTagWithScoreElem = currentTarget.closest('.article-tag-with-score')
+                            var articleTagWithScoreElem = currentTarget.closest('.article-tag')
                             var tagName = articleTagWithScoreElem.dataset.name
                             var otherVoteElem = articleTagWithScoreElem.getElementsByClassName(otherVoteElemClass)[0]
                             var otherVoteElemClassList = otherVoteElem.classList
-                            var tagVoteScoreElem = articleTagWithScoreElem.getElementsByClassName('count')[0]
-                            var tagVoteCountElem = currentTarget.closest('.article-tag-vote-all').getElementsByClassName('article-tag-vote-count')[0]
+                            var tagVoteScoreElem = articleTagWithScoreElem.getElementsByClassName('count')
+                            // Creator tags don't have score.
+                            var hasScore
+                            if (tagVoteScoreElem.length > 0) {
+                                hasScore = true
+                                tagVoteScoreElem = tagVoteScoreElem[0]
+                                var tagVoteCountElem = currentTarget.closest('.article-tag-vote-all').getElementsByClassName('article-tag-vote-count')[0]
+                            }
                             var myTagsElem = currentTarget.closest('.defined-or-not-tags') 
                             var myUpTagsElem = $(myTagsElem.querySelectorAll('.my-tags[data-value="1"]')[0])
                             var myDownTagsElem = $(myTagsElem.querySelectorAll('.my-tags[data-value="-1"]')[0])
@@ -220,8 +226,10 @@ window.onload = function() {
                                 tagVoteCountDelta = -1
                             }
                             tagitDoXhr = true
-                            incrementElem(tagVoteScoreElem, tagVoteScoreDelta)
-                            incrementElem(tagVoteCountElem, tagVoteCountDelta)
+                            if (hasScore) {
+                                incrementElem(tagVoteScoreElem, tagVoteScoreDelta)
+                                incrementElem(tagVoteCountElem, tagVoteCountDelta)
+                            }
                         }
                     )
                 }

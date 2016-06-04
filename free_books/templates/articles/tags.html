@@ -22,7 +22,10 @@
                     <td>{% trans "Up" %}:</td>
                     <td>
                         {% for tag in tags.creator_up %}
-                            {{ tag.name }} {% include "articles/tag_up_down.html" %} |
+                            <span class="article-tag" data-name="{{ tag.name }}">
+                                {{ tag.name }} {% include "articles/tag_up_down.html" %}
+                            </span>
+                            |
                         {% endfor %}
                     </td>
                 </tr>
