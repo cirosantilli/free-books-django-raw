@@ -81,11 +81,15 @@ footer {
     padding-bottom: 5px;
     padding-top: 5px;
 }
-.active {
-    color: orange;
-}
+/* Active elements. */
 a.help {
     cursor: help;
+}
+a.vote {
+    text-decoration: none;
+}
+.active {
+    color: orange;
 }
 .onoff.on .off {
     display: none;

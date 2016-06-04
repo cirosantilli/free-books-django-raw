@@ -1,19 +1,20 @@
 {% if show_tag_vote %}<a
-        class="{% if tag.user_has_upvoted %}active {% endif%}vote"
-        data-article="{{ article.id }}"
-        {% if defined01 == "1" %}data-defined_by_article="on"{% endif %}
-        data-name="{{ tag.name }}"
-        data-value="{{ ArticleTagVote.UPVOTE }}"
-        href="{% url 'article_tag_vote_new' %}"
-        title="{% if tag.user_has_upvoted %}{% trans "Undo upvote" %}{% else %}{% trans "This tag describes this article well" %}{% endif %}"
-    >&#x25B2;</a><a
+            class="onoff {% if not tag.user_has_upvoted %}on{% endif%} vote"
+            data-article="{{ article.id }}"
+            {% if defined01 == "1" %}data-defined_by_article="on"{% endif %}
+            data-name="{{ tag.name }}"
+            data-value="{{ ArticleTagVote.UPVOTE }}"
+            href="{% url 'article_tag_vote_new' %}"
+        ><span class="on"         title="{% trans "This tag describes this article well" %}">{{ upvote_sign }}</span
+        ><span class="active off" title="{% trans "Undo upvote" %}">{{ upvote_sign }}</span
+        ></a><a
     ><a
-        class="{% if tag.user_has_downvoted %}active {% endif%}vote"
-        data-article="{{ article.id }}"
-        {% if defined01 == "1" %}data-defined_by_article="on"{% endif %}
-        data-name="{{ tag.name }}"
-        data-value="{{ ArticleTagVote.DOWNVOTE }}"
-        href="{% url 'article_tag_vote_new' %}"
-        title="{% if tag.user_has_downvoted %}{% trans "Undo downvote" %}{% else %}{% trans "This tag does not describe this article well" %}{% endif %}"
-    >&#x25BC;</a>
-{% endif %}
+            class="onoff {% if not tag.user_has_downvoted %}on{% endif%} vote"
+            data-article="{{ article.id }}"
+            {% if defined01 == "1" %}data-defined_by_article="on"{% endif %}
+            data-name="{{ tag.name }}"
+            data-value="{{ ArticleTagVote.DOWNVOTE }}"
+            href="{% url 'article_tag_vote_new' %}"
+        ><span class="on"         title="{% trans "This tag does not describe this article well" %}">{{ downvote_sign }}</span
+        ><span class="active off" title="{% trans "Undo downvote" %}">{{ downvote_sign }}</span
+    ></a>{% endif %}

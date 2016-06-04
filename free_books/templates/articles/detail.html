@@ -22,9 +22,9 @@
                 title="{% trans "I like this article" %}"
             >
         {% endif %}
-        <span class="on" id="upvote" >&#x25B2; {% trans 'Upvote' %}</span>
+        <span class="on" id="upvote" >{{ upvote_sign }} {% trans 'Upvote' %}</span>
         {% if show_vote %}
-            <span class="active off" id="undo-upvote" >&#x25B2; {% trans 'Undo upvote' %}</span>
+            <span class="active off" id="undo-upvote" >{{ upvote_sign }} {% trans 'Undo upvote' %}</span>
             </a>
         {% endif %}
         (<a href="{% url 'article_vote_index' %}?{% url_set_params article=article.id value=ArticleVote.UPVOTE %}"
@@ -43,9 +43,9 @@
                 title="{% trans "I don't like this article" %}"
             >
         {% endif %}
-        <span class="on" id="downvote" >&#x25BC; {% trans 'Downvote' %}</span>
+        <span class="on" id="downvote" >{{ downvote_sign }} {% trans 'Downvote' %}</span>
         {% if show_vote %}
-            <span class="active off" id="undo-downvote" >&#x25BC; {% trans 'Undo downvote' %}</span>
+            <span class="active off" id="undo-downvote" >{{ downvote_sign }} {% trans 'Undo downvote' %}</span>
             </a>
         {% endif %}
         (<a href="{% url 'article_vote_index' %}?{% url_set_params article=article.id value=ArticleVote.DOWNVOTE %}"
