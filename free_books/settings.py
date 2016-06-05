@@ -32,6 +32,8 @@ SECRET_KEY = 't-o+68a&vy%@242dygu&+jy6#6oo@ow&gj!4oltd$eiy_tuq=0'
 DEBUG = (not in_heroku)
 # Test DEBUG False locally.
 #DEBUG = False
+# Test DEBUG True remotely.
+DEBUG = True
 ALLOWED_HOSTS = ['localhost', '.herokuapp.com']
 INTERNAL_IPS = (
     '127.0.0.1',
