@@ -1,35 +1,12 @@
-"""
-Generate a non-faked deterministic dataset. Good for initial debugging.
-
-TODO: take the 10 first users, articles, etc. and make them denser.
-Doing dense things for all users takes too long, but it is good to have some dense relations as well.
-"""
-
 import datetime
 
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.core.management.base import BaseCommand
+
 from django.db.utils import IntegrityError
 
 from free_books.models import Article, Profile, ArticleTagVote, ArticleVote
-
-"""
-TODO Also reset the ID counter to 0.
-
-Or find a way to get the ide of bulk created obejcts.
-
-Right now, we need to completey delete the database and migrate,
-which takes some seconds.
-
-./manage.py flush does not reset the index either.
-
-https://docs.djangoproject.com/en/1.9/ref/django-admin/#sqlsequencereset
-could be used but is a pain as you need one call per app.
-
-TRUNCATE would work as well, but it is not possible to do it:
-http://stackoverflow.com/questions/2988997/how-do-i-truncate-table-using-django-orm
-"""
-# User.objects.all().delete()
 
 nusers = 100
 narticles = nusers * 10
@@ -128,7 +105,20 @@ def article_tag_votes_creator_iterator():
                 ntags += 1
 
 class Command(BaseCommand):
+    help = """
+    CLEAN THE DATABASE and generate a clearly non-faked deterministic dataset.
+
+    Good for initial debugging as the data is more predictable.
+
+    TODO: take the 10 first users, articles, etc. and make them denser.
+    Doing dense things for all users takes too long, but it is good to have some dense relations as well.
+    """
+
     def handle(self, **options):
+
+        # See also: http://stackoverflow.com/questions/3414247/how-to-drop-all-tables-from-the-database-with-manage-py-cli-in-django
+        call_command('reset_db', '--noinput')
+        call_command('migrate')
 
         print('users')
         time = datetime.datetime.now()

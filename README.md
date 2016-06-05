@@ -41,16 +41,24 @@ And those blog apps have many blog-specific features which we don't need, which 
 Initial deployment:
 
     APP_NAME='cirosantilli-free-books'
+    DEMO_SERVER=false
     heroku login
     heroku create "$APP_NAME"
     heroku addons:create heroku-postgresql:hobby-dev
     git push heroku master
-    heroku run python manage.py migrate
-    heroku run python manage.py generate_data
+    if $DEMO_SERVER; then
+        heroku run python manage.py generate_data
+    else
+        heroku run python manage.py migrate
+    fi
     firefox "https://${APP_NAME}.herokuapps.com"
 
 Update:
 
-    APP_NAME='cirosantilli-free-books'
     git push heroku master
+    if $DEMO_SERVER; then
+        heroku run python manage.py generate_data
+    else
+        heroku run python manage.py migrate
+    fi
     heroku run python manage.py migrate

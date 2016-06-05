@@ -72,7 +72,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'free_books',
+
     'compressor',
+    'django_extensions',
 ]
 
 MIDDLEWARE_CLASSES = [
