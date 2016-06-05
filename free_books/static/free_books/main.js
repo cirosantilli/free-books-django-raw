@@ -77,7 +77,10 @@ var addSendXhrDataClickCallback = function(elem, successCallback, extraParamsCal
 
 window.onload = function() {
     var view = document.body.getAttribute('data-view')
-    var data_js_json = JSON.parse(document.body.dataset['jsJson'])
+    var bodyJsJson = document.body.dataset['jsJson']
+    if (bodyJsJson) {
+        var data_js_json = JSON.parse(bodyJsJson)
+    }
     if (view === 'article_detail') {
         // Article votes
         {

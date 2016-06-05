@@ -58,7 +58,9 @@
     {% compress css %}
         <link rel="stylesheet" type="text/x-scss" href="{% static 'free_books/main.scss' %}" />
     {% endcompress %}
-    <script src="{% static 'free_books/main.js' %}" ></script>
+    {% compress js %}
+        <script src="{% static 'free_books/main.js' %}" ></script>
+    {% endcompress %}
 </head>
 <body data-view="{{ request.resolver_match.url_name }}" data-js-json='{{ data_js_json }}' >
     <header>

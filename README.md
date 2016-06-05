@@ -38,6 +38,8 @@ And those blog apps have many blog-specific features which we don't need, which 
 
 ## Heroku deployment
 
+Initial deployment:
+
     APP_NAME='cirosantilli-free-books'
     heroku login
     heroku create "$APP_NAME"
@@ -45,4 +47,10 @@ And those blog apps have many blog-specific features which we don't need, which 
     git push heroku master
     heroku run python manage.py migrate
     heroku run python manage.py generate_data
-    firefox "http://${APP_NAME}.herokuapps.com"
+    firefox "https://${APP_NAME}.herokuapps.com"
+
+Update:
+
+    APP_NAME='cirosantilli-free-books'
+    git push heroku master
+    heroku run python manage.py migrate
