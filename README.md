@@ -47,6 +47,7 @@ Initial deployment:
     heroku addons:create heroku-postgresql:hobby-dev
     git push heroku master
     if $DEMO_SERVER; then
+        heroku pg:reset DATABASE_URL
         heroku run python manage.py generate_data
     else
         heroku run python manage.py migrate
@@ -57,6 +58,7 @@ Update:
 
     git push heroku master
     if $DEMO_SERVER; then
+        heroku pg:reset DATABASE_URL
         heroku run python manage.py generate_data
     else
         heroku run python manage.py migrate
