@@ -117,7 +117,8 @@ class Command(BaseCommand):
     def handle(self, **options):
 
         # See also: http://stackoverflow.com/questions/3414247/how-to-drop-all-tables-from-the-database-with-manage-py-cli-in-django
-        yn = input('DELETE THE DATABASE?!?! (yes, no): ')
+        # yn = input('DELETE THE DATABASE?!?! (yes, no): ')
+        yn = 'yes'
         if yn == 'yes':
             # TODO fails on Heroku.
             # call_command('reset_db', '--noinput')

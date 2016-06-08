@@ -1,5 +1,5 @@
-{% load staticfiles %}
 {% load compress %}
+{% load staticfiles %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,7 +16,7 @@
             <script src="{% static 'local_debug/jquery-ui.min.js' %}" ></script>
             {# TODO there are some linked files missing there, where are they? #}
             {# <link rel="stylesheet" href="{% static 'local_debug/jquery-ui-flick.css' %}" /> #}
-            <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/flick/jquery-ui.css" />
+            <!--<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/flick/jquery-ui.css" />-->
         {# bootstrap #}
             <link rel="stylesheet" href="{% static 'local_debug/bootstrap.min.css' %}" />
             <script src="{% static 'local_debug/bootstrap.min.js' %}" ></script>
@@ -65,26 +65,40 @@
     <header>
         <nav>
             <div class="login">
-            {% if user.is_authenticated %}
-                <strong>{% user_link %}</strong> |
-                <a href="{% url 'logout' %}?next={{ request.path | urlencode }}">{% trans "Logout" %}</a>
-            {% else %}
-                <a href="{% url 'login' %}?next={{ request.path }}">{% trans "Login" %}</a>
-            {% endif %}
-            {% if show_admin %}
-                | <a href="{% url 'admin:index' %}">{% trans "Admin" %}</a>
-            {% endif %}
-            {% if show_new_article %}
-                | <a href="{% url 'article_new' %}">{% trans "New article" %}</a>
-            {% endif %}
+                {% if user.is_authenticated %}
+                    <span class="current">{% user_link %}</span> |
+                    <a href="{% url 'logout' %}?next={{ request.path | urlencode }}">{% trans "Logout" %}</a>
+                {% else %}
+                    <a href="{% url 'login' %}?next={{ request.path }}">{% trans "Login" %}</a>
+                {% endif %}
+                {% if show_admin %}
+                    | <a href="{% url 'admin:index' %}">{% trans "Admin" %}</a>
+                {% endif %}
+                {% if show_new_article %}
+                    | <a href="{% url 'article_new' %}">{% trans "New article" %}</a>
+                {% endif %}
             </div>
             <div class="sections">
-                <span><strong><a href="{% url 'home' %}">{{ website_name }}</a></strong><span> |
-                <span><a href="{% url 'article_index' %}">{% trans "Articles" %}</a><span> |
-                <span><a href="{% url 'user_index' %}">{% trans "Users" %}</a><span> |
-                <span><a href="{% url 'article_vote_index' %}">{% trans "Article votes" %}</a><span> |
-                <span><a href="{% url 'article_tag_vote_index' %}">{% trans "Tag votes" %}</a><span>
+                <a class="{% current_if_url_name 'home' %}"
+                    href="{% url 'home' %}">{{ website_name }}</a> |
+                {# TODO link to tag index here. #}
+                <a class="{% current_if_url_name 'tags_articles' %}"
+                    href="{% url 'tags_articles' 'tag1' %}">{% trans "Tags" %}</a> |
+                <a class="{% current_if_url_name 'article_(index|detail|edit|new)' %}"
+                    href="{% url 'article_index' %}">{% trans "Articles" %}</a> |
+                <a class="{% current_if_url_name 'user_.*' %}"
+                    href="{% url 'user_index' %}">{% trans "Users" %}</a> |
+                <a class="{% current_if_url_name 'article_vote_index' %}"
+                    href="{% url 'article_vote_index' %}">{% trans "Article votes" %}</a> |
+                <a class="{% current_if_url_name 'article_tag_vote_index' %}"
+                    href="{% url 'article_tag_vote_index' %}">{% trans "Tag votes" %}</a>
             </div>
+            {% if show_tags_nav %}
+                <div class="sub-sections">
+                    <a class="{% current_if_url_name 'tags_articles' %}"
+                            href="{% url 'tags_articles' tag_name %}">{% trans "Tagged articles" %}</a> |
+                </div>
+            {% endif %}
         </nav>
     </header>
     <main>

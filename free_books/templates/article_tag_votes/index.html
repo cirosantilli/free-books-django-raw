@@ -9,7 +9,7 @@
     {% for vote in votes %}
         <tr>
             <td>{% user_link vote.creator %}</td>
-            <td>{{ vote.name }}</td>
+            <td>{% tag_link vote.name %}</td>
             <td>{{ vote.get_value_display }}</td>
             <td>{{ vote.defined_by_article }}</td>
             <td>{{ vote.date_created }}</td>

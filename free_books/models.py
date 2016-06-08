@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
 from django.db import models
-from django.db.models import Count, Sum
+from django.db.models import Case, Count, When, Sum
 from django.db.models.signals import post_save
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
@@ -105,7 +105,7 @@ def createProfile(sender, instance, created, **kwargs):
 post_save.connect(createProfile, sender=User)
 
 class Article(models.Model):
-    body = models.TextField(max_length=1048576)
+    body = models.TextField(max_length=1048576, blank=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     last_edited = models.DateTimeField(auto_now_add=True, blank=True)
     date_published = models.DateTimeField(auto_now_add=True, blank=True)
@@ -125,6 +125,19 @@ class Article(models.Model):
         return cls.objects.filter(articlevote__type=ArticleVote.LIKE) \
                           .annotate(net_votes=Sum('articlevote__value')) \
                           .order_by('-net_votes')
+    @classmethod
+    def filter_with_at_least_one_defined_tag_upvote(cls, articles, tag_name):
+        # TODO is it possible to do EXIST GROUP BY aggregates? Would be more efficient than COUNT.
+        return articles.annotate(
+                tag_upvote_count=Count(Case(
+                        When(
+                            articletagvote__defined_by_article=True,
+                            articletagvote__name=tag_name,
+                            articletagvote__value=ArticleTagVote.UPVOTE,
+                            then=1,
+                        ),
+                        default=None
+                ))).filter(tag_upvote_count__gt=0)
 
 class ArticleForm(MyModelForm):
     class Meta:
@@ -175,8 +188,9 @@ class ArticleVoteForm(MyModelForm):
         fields = ['article', 'creator', 'type', 'value']
 
 # TODO do we need to translate this message?
+article_tag_vote_regex = '[0-9a-z-]+'
 alphanumeric_lower_hyphen_validator = RegexValidator(
-    r'^[0-9a-z-]*$',
+    r'^' + article_tag_vote_regex + '$',
     _('Only lowercase letters "a-z", digits "0-9" and hyphens "-" are allowed.')
 )
 class ArticleTagVote(models.Model):
@@ -193,6 +207,9 @@ class ArticleTagVote(models.Model):
     # TODO name restrictions. [0-9a-z-].
     name = models.CharField(max_length=256, validators=[alphanumeric_lower_hyphen_validator])
     value = models.IntegerField(choices=VALUE_CHOICES, default=UPVOTE)
+    @classmethod
+    def get_tag_name_regex(cls):
+        return article_tag_vote_regex
     class Meta:
         unique_together = ('article', 'creator', 'defined_by_article', 'name')
 

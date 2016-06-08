@@ -9,6 +9,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 from . import views
+from . import models
 
 urlpatterns = [
     url(r'^$', views.home, name='home'),
@@ -51,4 +52,10 @@ urlpatterns.extend([
     url(r'^' + prefix + '/$', views.article_tag_vote_index, name='article_tag_vote_index'),
     url(r'^' + prefix + '/new$', views.article_tag_vote_new, name='article_tag_vote_new'),
     url(r'^' + prefix + '/get_more$', views.article_tag_vote_get_more, name='article_tag_vote_get_more'),
+])
+
+prefix = r'tags'
+id = r'(?P<tag_name>' + models.ArticleTagVote.get_tag_name_regex() + ')'
+urlpatterns.extend([
+    url(r'^' + prefix + '/' + id + '/articles$', views.tags_articles, name='tags_articles'),
 ])

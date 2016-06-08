@@ -64,3 +64,7 @@ Update:
         heroku run python manage.py migrate
     fi
     heroku run python manage.py migrate
+
+Free tier limits:
+
+- 10k database rows

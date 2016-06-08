@@ -1,13 +1,16 @@
 /* TODO move to SASS when it starts getting messy. */
 body {
+    border: 1px solid black;
     margin-left: 20px;
+    margin: 0px auto;
+    max-width: 800px;
+    min-width: 600px;
+    padding: 0px 10px;
 }
 footer {
-    border-bottom: 1px solid black;
     border-top: 1px solid black;
-    margin-bottom: 10px;
     margin-top: 50px;
-    padding-bottom: 5px;
+    padding-bottom: 10px;
     padding-top: 5px;
 }
 form label {
@@ -27,7 +30,7 @@ main {
     .search {
         border-bottom: 1px solid black;
         padding-bottom: 2px;
-        margin-bottom: 5px;
+        margin-bottom: 10px;
     }
     .defined-tags {
         border-bottom: 1px solid black;
@@ -52,15 +55,13 @@ main {
     }
 }
 nav {
-    .login {
+    .login, .sections, .sub-sections {
         border-bottom: 1px solid black;
         padding-bottom: 2px;
         margin-bottom: 5px;
-    }
-    .sections {
-        border-bottom: 1px solid black;
-        padding-bottom: 2px;
-        margin-bottom: 5px;
+        .current {
+            font-weight: bold;
+        }
     }
 }
 table {

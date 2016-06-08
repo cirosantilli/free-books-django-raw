@@ -1,0 +1,29 @@
+<div class="search">
+    Sort:
+    <a href="?sort=date-published">{% trans "Date published" %}</a> |
+    <a href="?sort=last-edited">{% trans "Last edited" %}</a> |
+    <a href="?sort=net-votes">{% trans "Net votes" %}</a>
+</div>
+{% if articles %}
+    <table>
+        {% for verbose_name in verbose_names %}
+            <th>{% trans verbose_name %}</th>
+        {% endfor %}
+    {% for article in articles %}
+        <tr>
+            <td><a href="{% url 'article_detail' article.id %}">{{ article.title }}</a></td>
+            <td>{% user_link article.creator %}</td>
+            <td>
+                <a href="{% url 'article_vote_index' %}?{% url_set_params article=article.id %}">
+                    {{ article.net_votes }}
+                </a>
+            </td>
+            <td>{{ article.date_published }}</td>
+            <td>{{ article.last_edited }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+    {% include "pagination.html" with objects=articles %}
+{% else %}
+    <div>{% trans "There are no articles that you can see" %}</div>
+{% endif %}

@@ -57,7 +57,7 @@ def user_detail(request, user_id):
         'article_count': Article.objects.filter(creator=anuser).count(),
         'about': render_markup_safe(anuser.profile.about),
         'show_edit': has_perm(request.user, 'user_edit', anuser),
-        'title': _('User') + ' ' + anuser.username,
+        'title': _('User') + ': ' + anuser.username,
     })
 
 @login_required
@@ -91,8 +91,8 @@ def user_settings(request, user_id):
     user = get_object_or_404(User, pk=user_id)
     return render(request, 'users/settings.html', {'title': _('Account settings')})
 
-def article_index(request):
-    sort = request.GET.get('sort')
+def get_article_index_context(request, get):
+    sort = get.get('sort')
     if sort == 'last-edited':
         articles = Article.objects.order_by('-last_edited')
     elif sort == 'net-votes':
@@ -100,10 +100,13 @@ def article_index(request):
     else:
         articles = Article.objects.order_by('-date_published')
     articles = filter_by_get(articles, request, (('creator__username', 'creator'),))
+    defined_tag_name = get.get('defined-tag')
+    if defined_tag_name:
+        # TODO use smarter metrics.
+        articles = Article.filter_with_at_least_one_defined_tag_upvote(articles, defined_tag_name)
     articles = get_page(request, articles, 25)
-    return render(request, 'articles/index.html', {
+    return {
         'articles': articles,
-        'title': _('Articles'),
         'verbose_names': [
             get_verbose(Article, 'title'),
             get_verbose(Article, 'creator'),
@@ -111,8 +114,12 @@ def article_index(request):
             get_verbose(Article, 'date_published'),
             get_verbose(Article, 'last_edited'),
         ],
+    }
 
-    })
+def article_index(request):
+    context = get_article_index_context(request, request.GET)
+    context['title'] = _('Articles')
+    return render(request, 'articles/index.html', context)
 
 def article_detail(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
@@ -356,3 +363,12 @@ def article_tag_vote_get_more(request):
             'with_score_has_more': tags_with_score['with_score_has_more']
         })
     return HttpResponseNotFound()
+
+def tags_articles(request, tag_name):
+    get = request.GET.copy()
+    get['defined-tag'] = tag_name
+    context = get_article_index_context(request, get)
+    context['title'] = _('Tag') + ': ' + tag_name + ' | ' + _('Tagged articles')
+    context['tag_name'] = tag_name
+    context['show_tags_nav'] = True
+    return render(request, 'tags/articles.html', context)

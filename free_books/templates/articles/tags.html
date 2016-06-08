@@ -24,7 +24,7 @@
                         <span class="article-tag-vote-list">
                             {% for tag in tags.creator_up %}
                                 <span class="article-tag" data-name="{{ tag.name }}">
-                                    {{ tag.name }} {% include "articles/tag_up_down.html" %}
+                                    {% tag_link tag.name %} {% include "articles/tag_up_down.html" %}
                                 </span>
                                 |
                             {% endfor %}
@@ -36,7 +36,7 @@
                     <td>
                         <span class="article-tag-vote-list">
                             {% for tag in tags.creator_down %}
-                                {{ tag.name }} {% include "articles/tag_up_down.html" %} |
+                                {% tag_link tag.name %} {% include "articles/tag_up_down.html" %} |
                             {% endfor %}
                         </span>
                     </td>

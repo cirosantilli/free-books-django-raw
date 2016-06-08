@@ -1,7 +1,21 @@
+import re
+
 from django import template
 from django.template import Context, Template
 
 register = template.Library()
+
+@register.simple_tag(takes_context=True)
+def current_if_url_name(context, url_name):
+    if re.match(url_name + '$', context['request'].resolver_match.url_name):
+        return 'current'
+    else:
+        return ''
+
+@register.simple_tag(takes_context=True)
+def tag_link(context, tag_name):
+    return Template('<a href="{% url \'tags_articles\' tag_name %}">{{ tag_name }}</a>') \
+        .render(Context({'tag_name': tag_name}))
 
 @register.simple_tag(takes_context=True)
 def user_link(context, user=None):
