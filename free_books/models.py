@@ -74,19 +74,15 @@ class Profile(models.Model):
                 type=ArticleVote.LIKE, value=ArticleVote.DOWNVOTE).count()
     @property
     def linear_reputation(self):
-        # Same, .but less efficient? Depends if the others are cached.
-        # return self.article_upvotes_received_count - self.article_downvotes_received_count
         return ArticleVote.objects.filter(
                               article__creator=self.user,
                               type=ArticleVote.LIKE) \
                           .aggregate(Sum('value'))['value__sum']
     @classmethod
     def get_users_with_most_linear_reputation(cls):
-        q = User.objects.filter(article__articlevote__type=ArticleVote.LIKE) \
+        return User.objects.filter(article__articlevote__type=ArticleVote.LIKE) \
                         .annotate(linear_reputation=Sum('article__articlevote__value')) \
                         .order_by('-linear_reputation')
-        print(q.query)
-        return q
 
 class UserForm(MyModelForm):
     class Meta:
@@ -121,10 +117,18 @@ class Article(models.Model):
     def net_votes(self):
         return self.upvote_count() - self.downvote_count()
     @classmethod
-    def get_articles_with_most_net_votes(cls):
-        return cls.objects.filter(articlevote__type=ArticleVote.LIKE) \
-                          .annotate(net_votes=Sum('articlevote__value')) \
-                          .order_by('-net_votes')
+    def get_articles_with_most_net_votes(cls, articles=None):
+        if articles is None:
+            articles = cls.objects
+        else:
+            articles = Article.objects.filter(pk__in=articles)
+        return articles.annotate(net_votes=Sum(Case(
+            When(
+                articlevote__type=ArticleVote.LIKE,
+                then='articlevote__value'
+            ),
+            default=0
+        ))).order_by('-net_votes')
     @classmethod
     def filter_with_at_least_one_defined_tag_upvote(cls, articles, tag_name):
         # TODO is it possible to do EXIST GROUP BY aggregates? Would be more efficient than COUNT.
@@ -134,7 +138,7 @@ class Article(models.Model):
                             articletagvote__defined_by_article=True,
                             articletagvote__name=tag_name,
                             articletagvote__value=ArticleTagVote.UPVOTE,
-                            then=1,
+                            then=True,
                         ),
                         default=None
                 ))).filter(tag_upvote_count__gt=0)

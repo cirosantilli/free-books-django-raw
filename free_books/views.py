@@ -92,18 +92,20 @@ def user_settings(request, user_id):
     return render(request, 'users/settings.html', {'title': _('Account settings')})
 
 def get_article_index_context(request, get):
-    sort = get.get('sort')
-    if sort == 'last-edited':
-        articles = Article.objects.order_by('-last_edited')
-    elif sort == 'net-votes':
-        articles = Article.get_articles_with_most_net_votes()
-    else:
-        articles = Article.objects.order_by('-date_published')
+    articles = Article.objects.all()
     articles = filter_by_get(articles, request, (('creator__username', 'creator'),))
     defined_tag_name = get.get('defined-tag')
     if defined_tag_name:
         # TODO use smarter metrics.
+        # TODO exclude if current user has downvoted, always include if curent user has upvoted.
         articles = Article.filter_with_at_least_one_defined_tag_upvote(articles, defined_tag_name)
+    sort = get.get('sort')
+    if sort == 'last-edited':
+       articles = articles.order_by('-last_edited')
+    elif sort == 'net-votes':
+       articles = Article.get_articles_with_most_net_votes(articles)
+    else:
+       articles = articles.order_by('-date_published')
     articles = get_page(request, articles, 25)
     return {
         'articles': articles,
@@ -160,7 +162,8 @@ def article_new(request):
             article.creator = request.user
             article.save()
             return redirect(article)
-        # TODO else? Or does it throw?
+        else:
+            return HttpResponseNotFound()
     else:
         form = ArticleForm()
     return render(request, 'articles/new.html', {
@@ -183,7 +186,8 @@ def article_edit(request, article_id):
             article.last_edited = timezone.now()
             article.save()
             return redirect(article)
-        # TODO else? Or does it throw?
+        else:
+            return HttpResponseNotFound()
     else:
         form = ArticleForm(instance=article)
     return render(request, 'articles/new.html', {
@@ -351,7 +355,7 @@ def article_tag_vote_get_more(request):
         tags = ArticleTagVote.objects.filter(article=article, defined_by_article=defined)
         tags_with_score = get_tags_with_score(tags, request.user, defined, offset, NTAGS_GET)
         return JsonResponse({
-            # TODO this is horrendous and should be replaced with a client side framework.
+            # TODO this is horrendous and should be replaced with a client side framework...
             'html': get_template('articles/tags_with_score.html').render({
                 'ArticleTagVote': ArticleTagVote,
                 'article': article,
