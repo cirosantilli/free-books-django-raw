@@ -60,12 +60,63 @@ class ArtcleModelTestCase(TestCase):
             value=ArticleTagVote.UPVOTE,
         )
 
+        # Tested action.
+
         articles = Article.filter_with_at_least_one_defined_tag_upvote(Article.objects.all(), tag_name)
+
+        # Assertions.
+
         self.assertEqual(
             set(articles.values_list('id', flat=True)),
             set([article_with_tag_upvote.id, article_with_tag_upvote_and_downvote.id])
         )
         self.assertEqual(articles.count(), 2)
+
+    def test_with_at_least_one_defined_tag_upvote__remove_user_downvote(self):
+        user0 = User.objects.create(username='user0', email='user0@mail.com')
+        user1 = User.objects.create(username='user1', email='user1@mail.com')
+        user2 = User.objects.create(username='user2', email='user2@mail.com')
+        tag_name = 'a'
+
+        article_with_tag_upvote = Article.objects.create(creator=user0, title='a')
+        article_tag_upvote = ArticleTagVote.objects.create(
+            article=article_with_tag_upvote,
+            creator=user0,
+            name=tag_name,
+            value=ArticleTagVote.UPVOTE,
+        )
+
+        article_with_tag_upvote_and_downvote = Article.objects.create(creator=user0, title='a')
+        ArticleTagVote.objects.create(
+            article=article_with_tag_upvote_and_downvote,
+            creator=user0,
+            name=(tag_name),
+            value=ArticleTagVote.DOWNVOTE,
+        )
+        ArticleTagVote.objects.create(
+            article=article_with_tag_upvote_and_downvote,
+            creator=user1,
+            name=(tag_name),
+            value=ArticleTagVote.UPVOTE,
+        )
+        ArticleTagVote.objects.create(
+            article=article_with_tag_upvote_and_downvote,
+            creator=user2,
+            name=(tag_name),
+            value=ArticleTagVote.UPVOTE,
+        )
+
+        # Tested action.
+
+        articles = Article.filter_with_at_least_one_defined_tag_upvote(Article.objects.all(), tag_name, user0)
+
+        # Assertions.
+
+        self.assertEqual(
+            articles.values_list('id', flat=True)[0],
+            article_with_tag_upvote.id
+        )
+        self.assertEqual(articles.count(), 1)
 
     def test_get_articles_with_most_net_votes(self):
         user0 = User.objects.create(username='user0', email='user0@mail.com')

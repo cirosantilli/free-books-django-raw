@@ -130,18 +130,34 @@ class Article(models.Model):
             default=0
         ))).order_by('-net_votes')
     @classmethod
-    def filter_with_at_least_one_defined_tag_upvote(cls, articles, tag_name):
-        # TODO is it possible to do EXIST GROUP BY aggregates? Would be more efficient than COUNT.
-        return articles.annotate(
-                tag_upvote_count=Count(Case(
-                        When(
-                            articletagvote__defined_by_article=True,
-                            articletagvote__name=tag_name,
-                            articletagvote__value=ArticleTagVote.UPVOTE,
-                            then=True,
-                        ),
-                        default=None
-                ))).filter(tag_upvote_count__gt=0)
+    def filter_with_at_least_one_defined_tag_upvote(cls, articles, tag_name, user_downvote_remove=None):
+        """
+        -   user_downvote_remove: if this user has downvoted a tag for an article,
+            remove that article from the retuned list, regardless of what other users have voted.
+        """
+        annotate_kwargs = {
+            'tag_upvote_count':Count(Case(When(
+                    articletagvote__defined_by_article=True,
+                    articletagvote__name=tag_name,
+                    articletagvote__value=ArticleTagVote.UPVOTE,
+                    then=True,
+                ),
+                default=None
+            ))
+        }
+        filter_kwargs = {'tag_upvote_count__gt':0}
+        if user_downvote_remove is not None:
+            annotate_kwargs['tag_user_downvote_count'] = Count(Case(When(
+                articletagvote__creator=user_downvote_remove,
+                articletagvote__defined_by_article=True,
+                articletagvote__name=tag_name,
+                articletagvote__value=ArticleTagVote.DOWNVOTE,
+                then=True,
+                ),
+                default=None
+            ))
+            filter_kwargs['tag_user_downvote_count'] = 0
+        return articles.annotate(**annotate_kwargs).filter(**filter_kwargs)
 
 class ArticleForm(MyModelForm):
     class Meta:

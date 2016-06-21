@@ -96,9 +96,12 @@ def get_article_index_context(request, get):
     articles = filter_by_get(articles, request, (('creator__username', 'creator'),))
     defined_tag_name = get.get('defined-tag')
     if defined_tag_name:
-        # TODO use smarter metrics.
-        # TODO exclude if current user has downvoted, always include if curent user has upvoted.
-        articles = Article.filter_with_at_least_one_defined_tag_upvote(articles, defined_tag_name)
+        request_user = request.user
+        if request_user.is_authenticated():
+            user = request_user
+        else:
+            user = None
+        articles = Article.filter_with_at_least_one_defined_tag_upvote(articles, defined_tag_name, user)
     sort = get.get('sort')
     if sort == 'last-edited':
        articles = articles.order_by('-last_edited')
