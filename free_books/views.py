@@ -129,10 +129,8 @@ def article_index(request):
 def article_detail(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
     user = request.user
-
     defined_tags     = get_tags_defined(article, user, True, 0, NTAGS_GET)
     non_defined_tags = get_tags_defined(article, user, False, 0, NTAGS_GET)
-
     context = {
         'ArticleVote': ArticleVote,
         'ArticleTagVote': ArticleTagVote,

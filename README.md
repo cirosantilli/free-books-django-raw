@@ -9,14 +9,15 @@ How to run it:
     sudo apt-get intall postgresql libpq-dev
     sudo pip install --upgrade virtualenv
     virtualenv -p python3.5 .venv
-    . .env/bin/activate
+    . .venv/bin/activate
     pip install -r requirements.txt
-    python manage.py migrate
     # TODO drop / truncate database if one exists.
     # Find a better method (more portable and faster)
     # http://stackoverflow.com/questions/3414247/django-drop-all-tables-from-database
-    rm db.sqlite3 && ./manage.py migrate
+    rm -f db.sqlite3
     python manage.py generate_data
+    python manage.py migrate
+    python manage.py runserver
     firefox localhost:8000
 
 Now login with:
