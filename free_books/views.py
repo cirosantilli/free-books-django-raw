@@ -94,14 +94,14 @@ def user_settings(request, user_id):
 def get_article_index_context(request, get):
     articles = Article.objects.all()
     articles = filter_by_get(articles, request, (('creator__username', 'creator'),))
-    defined_tag_name = get.get('defined-tag')
-    if defined_tag_name:
+    tags = get.get('tags')
+    if tags:
         request_user = request.user
         if request_user.is_authenticated():
             user = request_user
         else:
             user = None
-        articles = Article.filter_with_at_least_one_defined_tag_upvote(articles, defined_tag_name, user)
+        articles = Article.filter_with_at_least_one_defined_tag_upvote(articles, tags, user)
     sort = get.get('sort')
     if sort == 'last-edited':
        articles = articles.order_by('-last_edited')
@@ -368,6 +368,17 @@ def article_tag_vote_get_more(request):
             'with_score_has_more': tags_with_score['with_score_has_more']
         })
     return HttpResponseNotFound()
+
+def tag_index(request):
+    tags = get_page(request, ArticleTagVote.get_unique_tag_upvotes(), 25)
+    return render(request, 'tags/index.html', {
+        'tags': tags,
+        'title': _('Tags'),
+        'verbose_names': [
+            get_verbose(ArticleTagVote, 'name'),
+            _('Upvote count'),
+        ],
+    })
 
 def tags_articles(request, tag_name):
     get = request.GET.copy()

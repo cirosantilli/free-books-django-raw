@@ -17,19 +17,24 @@ class MyModelForm(ModelForm):
         super().__init__(*args, **kwargs)
 
 class Profile(models.Model):
+
     about = models.TextField()
     last_edited = models.DateTimeField(auto_now_add=True, blank=True, verbose_name='profile last edited')
     # This is just a cache, but definitely required as it is an expensive value to calculate.
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # This could be used to cache reputation queries.
     # linear_reputation = models.BigIntegerField(default=0)
+
     def __str__(self):
         return self.user.username
+
     def get_absolute_url(self):
         return reverse('user_detail', args=[str(self.id)])
+
     @property
     def real_name(self):
         return self.user.first_name + ' ' + self.user.last_name
+
     def has_upvoted(self, article):
         """
         True if use has upvoted a given article, false otherwise.
@@ -39,6 +44,7 @@ class Profile(models.Model):
                 creator=self.user,
                 type=ArticleVote.LIKE,
                 value=ArticleVote.UPVOTE).exists()
+
     def has_downvoted(self, article):
         """
         True if use has downvoted a given article, false otherwise.
@@ -48,36 +54,44 @@ class Profile(models.Model):
                 creator=self.user,
                 type=ArticleVote.LIKE,
                 value=ArticleVote.DOWNVOTE).exists()
+
     @property
     def article_votes_cast_count(self):
         return ArticleVote.objects.filter(creator=self.user,
                 type=ArticleVote.LIKE).count()
+
     @property
     def article_upvotes_cast_count(self):
         return ArticleVote.objects.filter(creator=self.user,
                 type=ArticleVote.LIKE, value=ArticleVote.UPVOTE).count()
+
     @property
     def article_downvotes_cast_count(self):
         return ArticleVote.objects.filter(creator=self.user,
                 type=ArticleVote.LIKE, value=ArticleVote.DOWNVOTE).count()
+
     @property
     def article_votes_received_count(self):
         return ArticleVote.objects.filter(article__creator=self.user,
                                           type=ArticleVote.LIKE).count()
+
     @property
     def article_upvotes_received_count(self):
         return ArticleVote.objects.filter(article__creator=self.user,
                 type=ArticleVote.LIKE, value=ArticleVote.UPVOTE).count()
+
     @property
     def article_downvotes_received_count(self):
         return ArticleVote.objects.filter(article__creator=self.user,
                 type=ArticleVote.LIKE, value=ArticleVote.DOWNVOTE).count()
+
     @property
     def linear_reputation(self):
         return ArticleVote.objects.filter(
                               article__creator=self.user,
                               type=ArticleVote.LIKE) \
                           .aggregate(Sum('value'))['value__sum']
+
     @classmethod
     def get_users_with_most_linear_reputation(cls):
         return User.objects.filter(article__articlevote__type=ArticleVote.LIKE) \
@@ -101,21 +115,28 @@ def createProfile(sender, instance, created, **kwargs):
 post_save.connect(createProfile, sender=User)
 
 class Article(models.Model):
+
     body = models.TextField(max_length=1048576, blank=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     last_edited = models.DateTimeField(auto_now_add=True, blank=True)
     date_published = models.DateTimeField(auto_now_add=True, blank=True)
     title = models.CharField(max_length=256)
+
     def __str__(self):
         return self.title
+
     def get_absolute_url(self):
         return reverse('article_detail', args=[str(self.id)])
+
     def upvote_count(self):
         return ArticleVote.objects.filter(article=self, type=ArticleVote.LIKE, value=ArticleVote.UPVOTE).count()
+
     def downvote_count(self):
         return ArticleVote.objects.filter(article=self, type=ArticleVote.LIKE, value=ArticleVote.DOWNVOTE).count()
+
     def net_votes(self):
         return self.upvote_count() - self.downvote_count()
+
     @classmethod
     def get_articles_with_most_net_votes(cls, articles=None):
         if articles is None:
@@ -129,6 +150,7 @@ class Article(models.Model):
             ),
             default=0
         ))).order_by('-net_votes')
+
     @classmethod
     def filter_with_at_least_one_defined_tag_upvote(cls, articles, tag_name, user_downvote_remove=None):
         """
@@ -165,6 +187,8 @@ class ArticleForm(MyModelForm):
         fields = ['title', 'body']
 
 class ArticleVote(models.Model):
+    class Meta:
+        unique_together = ('article', 'creator', 'type')
     LIKE = 0
     TYPE_CHOICES = (
         (LIKE, 'Like'),
@@ -182,8 +206,6 @@ class ArticleVote(models.Model):
     # We might add more types later on, like flagging illegal content.
     type = models.IntegerField(choices=TYPE_CHOICES, default=UPVOTE)
     value = models.IntegerField(choices=VALUE_CHOICES, default=UPVOTE)
-    class Meta:
-        unique_together = ('article', 'creator', 'type')
 
 # Something along those lines would be needed if we were to cache the linear reputation on a column.
 # Considerations:
@@ -214,6 +236,8 @@ alphanumeric_lower_hyphen_validator = RegexValidator(
     _('Only lowercase letters "a-z", digits "0-9" and hyphens "-" are allowed.')
 )
 class ArticleTagVote(models.Model):
+    class Meta:
+        unique_together = ('article', 'creator', 'defined_by_article', 'name')
     UPVOTE = 1
     DOWNVOTE = -1
     VALUE_CHOICES = (
@@ -227,11 +251,17 @@ class ArticleTagVote(models.Model):
     # TODO name restrictions. [0-9a-z-].
     name = models.CharField(max_length=256, validators=[alphanumeric_lower_hyphen_validator])
     value = models.IntegerField(choices=VALUE_CHOICES, default=UPVOTE)
+
     @classmethod
     def get_tag_name_regex(cls):
         return article_tag_vote_regex
-    class Meta:
-        unique_together = ('article', 'creator', 'defined_by_article', 'name')
+
+    @classmethod
+    def get_unique_tag_upvotes(cls):
+        return cls.objects \
+            .filter(value=cls.UPVOTE) \
+            .values('name') \
+            .annotate(count=Count('name'))
 
 class ArticleTagVoteForm(MyModelForm):
     class Meta:

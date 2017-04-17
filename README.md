@@ -16,8 +16,7 @@ How to run it:
     # http://stackoverflow.com/questions/3414247/django-drop-all-tables-from-database
     rm -f db.sqlite3
     python manage.py generate_data
-    python manage.py migrate
-    python manage.py runserver
+    Ipython manage.py runserver
     firefox localhost:8000
 
 Now login with:

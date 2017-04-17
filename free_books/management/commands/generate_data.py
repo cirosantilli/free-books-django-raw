@@ -82,27 +82,27 @@ def article_tag_votes_iterator():
             ntags += 1
 
 def article_tag_votes_creator_iterator():
-        """
-        have some tags by article creators.
-        """
-        ntags = 0
-        for article_pk in range(1, narticles + 1):
-            # TODO DRY up this check further.
-            article_pk_mod = article_pk % 5
-            if article_pk_mod != 0:
-                creator_pk = Article.objects.get(pk=article_pk).creator.pk
-                name = 'tag' + str(ntags % total_tag_names)
-                params = {
-                    'article_id':article_pk,
-                    'creator_id':creator_pk,
-                    'defined_by_article':(article_pk_mod != 4),
-                    'name':name,
-                }
-                if not (ArticleTagVote.objects.filter(**params)):
-                    params.update({'value':ArticleTagVote.UPVOTE})
-                    vote = ArticleTagVote(**params)
-                    yield vote
-                ntags += 1
+    """
+    have some tags by article creators.
+    """
+    ntags = 0
+    for article_pk in range(1, narticles + 1):
+        # TODO DRY up this check further.
+        article_pk_mod = article_pk % 5
+        if article_pk_mod != 0:
+            creator_pk = Article.objects.get(pk=article_pk).creator.pk
+            name = 'tag' + str(ntags % total_tag_names)
+            params = {
+                'article_id':article_pk,
+                'creator_id':creator_pk,
+                'defined_by_article':(article_pk_mod != 4),
+                'name':name,
+            }
+            if not (ArticleTagVote.objects.filter(**params)):
+                params.update({'value':ArticleTagVote.UPVOTE})
+                vote = ArticleTagVote(**params)
+                yield vote
+            ntags += 1
 
 class Command(BaseCommand):
     help = """

@@ -57,5 +57,6 @@ urlpatterns.extend([
 prefix = r'tags'
 id = r'(?P<tag_name>' + models.ArticleTagVote.get_tag_name_regex() + ')'
 urlpatterns.extend([
+    url(r'^' + prefix + '/$', views.tag_index, name='tag_index'),
     url(r'^' + prefix + '/' + id + '/articles$', views.tags_articles, name='tags_articles'),
 ])
