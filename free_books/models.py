@@ -259,7 +259,7 @@ class ArticleTagVote(models.Model):
     @classmethod
     def get_unique_tag_upvotes(cls):
         return cls.objects \
-            .filter(value=cls.UPVOTE) \
+            .filter(value=cls.UPVOTE, defined_by_article=True) \
             .values('name') \
             .annotate(count=Count('name'))
 

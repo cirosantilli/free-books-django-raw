@@ -114,7 +114,12 @@ class Command(BaseCommand):
     Doing dense things for all users takes too long, but it is good to have some dense relations as well.
     """
 
+    def add_arguments(self, parser):
+        parser.add_argument('nusers', default=nusers, type=int)
+
     def handle(self, **options):
+        global nusers
+        nusers = options['nusers']
 
         # See also: http://stackoverflow.com/questions/3414247/how-to-drop-all-tables-from-the-database-with-manage-py-cli-in-django
         # yn = input('DELETE THE DATABASE?!?! (yes, no): ')

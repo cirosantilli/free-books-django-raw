@@ -84,7 +84,7 @@
                 {# TODO link to tag index here. #}
                 <a class="{% current_if_url_name 'article_(index|detail|edit|new)' %}"
                     href="{% url 'article_index' %}">{% trans "Articles" %}</a> |
-                <a class="{% current_if_url_name 'tags' %}"
+                <a class="{% current_if_url_name 'tag_index' %}"
                     href="{% url 'tag_index' %}">{% trans "Tags" %}</a> |
                 <a class="{% current_if_url_name 'user_.*' %}"
                     href="{% url 'user_index' %}">{% trans "Users" %}</a> |
