@@ -261,7 +261,11 @@ class ArticleTagVote(models.Model):
         return cls.objects \
             .filter(value=cls.UPVOTE, defined_by_article=True) \
             .values('name') \
-            .annotate(count=Count('name'))
+            .annotate(
+                upvote_count=Count('article'),
+                article_count=Count('article', distinct=True),
+                user_count=Count('creator', distinct=True),
+            )
 
 class ArticleTagVoteForm(MyModelForm):
     class Meta:

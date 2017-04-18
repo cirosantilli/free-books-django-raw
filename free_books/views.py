@@ -371,12 +371,15 @@ def article_tag_vote_get_more(request):
 
 def tag_index(request):
     tags = get_page(request, ArticleTagVote.get_unique_tag_upvotes(), 25)
+    print(ArticleTagVote.get_unique_tag_upvotes().query)
     return render(request, 'tags/index.html', {
         'tags': tags,
         'title': _('Tags'),
         'verbose_names': [
             get_verbose(ArticleTagVote, 'name'),
+            _('Article count'),
             _('Upvote count'),
+            _('User count'),
         ],
     })
 
