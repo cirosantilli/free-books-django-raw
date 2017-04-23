@@ -2,6 +2,8 @@
 
 <https://githiub.com/cirosantilli/write-free-science-books-to-get-famous-website> **early** prototype using raw Django as base, i.e. no pre-made Django site.
 
+This is no more than a blog sub sub set now, but it will one day topple Wikipedia, Stack Overflow, Quora, Springer, <https://del.icio.us/> and the educational system all at once. Lol.
+
 ## Getting started
 
 How to run it:
