@@ -8,9 +8,11 @@ This is no more than a blog sub sub set now, but it will one day topple Wikipedi
 
 How to run it:
 
-    sudo apt-get intall postgresql libpq-dev
+    sudo apt-get install postgresql libpq-dev
     sudo pip install --upgrade virtualenv
-    virtualenv -p python3.5 .venv
+    # This is the version we last tested with.
+    # You can try to replace it with whatever python you have installed and give it a try.
+    virtualenv -p python3.6 .venv
     . .venv/bin/activate
     pip install -r requirements.txt
     # TODO drop / truncate database if one exists.
@@ -18,15 +20,15 @@ How to run it:
     # http://stackoverflow.com/questions/3414247/django-drop-all-tables-from-database
     rm -f db.sqlite3
     python manage.py generate_data
-    Ipython manage.py runserver
+    python manage.py runserver
     firefox localhost:8000
 
 Now login with:
 
-- username: `user0` for an admin, or `user{1-100}` for non-admins
+- username: `user1` for an admin, or `user{2-100}` for non-admins
 - password: `asdfqwer` for everyone
 
-Tested on Ubuntu 16.04, Python 3.5.
+Tested on Ubuntu 18.04.
 
 ## About
 

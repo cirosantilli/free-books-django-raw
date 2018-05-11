@@ -115,7 +115,13 @@ class Command(BaseCommand):
     """
 
     def add_arguments(self, parser):
-        parser.add_argument('nusers', default=nusers, type=int)
+        parser.add_argument(
+            'nusers',
+            default=nusers,
+            nargs='?',
+            type=int,
+            help='TODO broken for most values e.g. 1 and 10'
+        )
 
     def handle(self, **options):
         global nusers
